@@ -1,0 +1,60 @@
+site_name: Sistema de Reservación de Laboratorios
+site_description: Documentación oficial del sistema de gestión de laboratorios universitarios.
+site_author: Personal Administrativo
+repo_name: Proyect-Reservacion
+repo_url: https://github.com/user/reservacion-laboratorios
+
+theme:
+  name: material
+  language: es
+  palette:
+    # Ajuste automático entre modo claro y oscuro
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Cambiar a modo oscuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Cambiar a modo claro
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - content.code.copy
+
+nav:
+  - Inicio: index.md
+  - Preparación:
+    - Instalación: instalacion.md
+    - Seguridad y Roles: seguridad.md
+  - Guía de Usuario:
+    - Uso General: guia.md
+  - Especificaciones Técnicas:
+    - Arquitectura MVC: modernizacion.md
+    - Base de Datos: base-datos.md
+    - Documentación Interna: documentacion_tecnica.md
+    - Despliegue en la Nube: despliegue.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:pymdownx.emoji.twemoji
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.tabbed:
+      alternate_style: true

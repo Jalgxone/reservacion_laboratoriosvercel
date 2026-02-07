@@ -1,0 +1,14 @@
+{
+    "name": "php-programming/reservacion_laboratorios",
+    "description": "reservacion_laboratorios",
+    "type": "project",
+    "require": {
+        "php": ">=7.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\\\": "app/",
+            "Core\\\\": "core/"
+        }
+    }
+}
