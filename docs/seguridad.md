@@ -24,6 +24,4 @@ El sistema implementa un modelo de seguridad robusto basado en roles y sesiones.
 
 ### 4. Llaves de Aplicación
 - El archivo `config/security.php` contiene la llave `APP_ENCRYPTION_KEY` utilizada para procesos internos de cifrado.
-
-> [!WARNING]
-> Nunca compartas el archivo `config/security.php` ni lo subas a repositorios públicos con llaves de producción.
+
