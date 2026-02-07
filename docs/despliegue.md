@@ -17,19 +17,3 @@ Vercel es ideal porque detecta automáticamente proyectos de MkDocs. El **Plan H
 6. ¡Listo! Te dará una URL tipo `tu-proyecto.vercel.app` de forma gratuita para siempre.
 
 ---
-
-## Opción 2: GitHub Pages
-
-Si usas GitHub, puedes usar sus "Pages" de forma gratuita.
-
-### Pasos:
-1. En tu terminal local, instala `gh-deploy`:
-   ```bash
-   pip install mkdocs-material
-   ```
-2. Ejecuta el comando mágico:
-   ```bash
-   mkdocs gh-deploy
-   ```
-3. Esto creará una rama llamada `gh-pages` y subirá todo el sitio estático automáticamente.
-4. Ve a la configuración de tu repo en GitHub > **Pages** y asegúrate de que esté apuntando a la rama `gh-pages`.
