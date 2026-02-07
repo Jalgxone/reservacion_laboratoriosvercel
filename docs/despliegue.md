@@ -33,10 +33,3 @@ Si usas GitHub, puedes usar sus "Pages" de forma gratuita.
    ```
 3. Esto creará una rama llamada `gh-pages` y subirá todo el sitio estático automáticamente.
 4. Ve a la configuración de tu repo en GitHub > **Pages** y asegúrate de que esté apuntando a la rama `gh-pages`.
-
----
-
-## Preparación de Archivos
-He creado un archivo llamado `requirements.txt` en la raíz de tu proyecto. Este archivo le dice a la nube (Vercel o GitHub) qué herramientas necesita instalar para que el sitio funcione:
-- `mkdocs-material`
-- `pymdown-extensions`
