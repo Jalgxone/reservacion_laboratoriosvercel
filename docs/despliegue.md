@@ -40,6 +40,3 @@ Si usas GitHub, puedes usar sus "Pages" de forma gratuita.
 He creado un archivo llamado `requirements.txt` en la raíz de tu proyecto. Este archivo le dice a la nube (Vercel o GitHub) qué herramientas necesita instalar para que el sitio funcione:
 - `mkdocs-material`
 - `pymdown-extensions`
-
-> [!TIP]
-> Cada vez que hagas un `git push` a tu rama principal, Vercel actualizará la documentación automáticamente.
