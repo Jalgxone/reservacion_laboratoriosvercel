@@ -1,0 +1,50 @@
+/* Typographic Refinements */
+:root {
+  --md-text-font: "Roboto", sans-serif;
+  --md-code-font: "Roboto Mono", monospace;
+  --md-primary-fg-color: #009688; /* Teal */
+  --md-primary-fg-color--light: #4db6ac; 
+  --md-primary-fg-color--dark: #00796b;
+  --md-accent-fg-color: #3f51b5; /* Indigo */
+}
+
+/* Improve header */
+.md-header {
+    background-color: var(--md-primary-fg-color--dark);
+}
+
+/* Enhancing navigation */
+.md-nav__link--active {
+    font-weight: bold;
+    color: var(--md-accent-fg-color);
+}
+
+/* Better code blocks */
+.md-typeset pre > code {
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Admonition improvements */
+.md-typeset .admonition, 
+.md-typeset details {
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+/* Buttons */
+.md-button {
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.md-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Footer improvements */
+footer {
+    background-color: #f5f5f5; /* Light gray background for footer */
+    color: #333;
+}

@@ -23,6 +23,8 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Cambiar a modo claro
+  logo: assets/images/logo.png
+  favicon: assets/images/favicon.ico
   features:
     - navigation.tabs
     - navigation.sections
@@ -31,6 +33,13 @@ theme:
     - search.highlight
     - search.share
     - content.code.copy
+    - navigation.footer
+    - toc.integrate
+    - header.autohide
+
+extra_css:
+  - stylesheets/extra.css
+
 
 nav:
   - Inicio: index.md
