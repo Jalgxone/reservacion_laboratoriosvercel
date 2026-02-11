@@ -44,6 +44,16 @@ nav:
     - Base de Datos: base-datos.md
     - Documentación Interna: documentacion_tecnica.md
     - Despliegue en la Nube: despliegue.md
+  - Documentación Backend:
+    - Introducción: backend/index.md
+    - Autenticación: backend/autenticacion.md
+    - Usuarios: backend/usuarios.md
+    - Laboratorios: backend/laboratorios.md
+    - Recursos: backend/recursos.md
+    - Reservas: backend/reservas.md
+    - Horarios: backend/horarios.md
+    - Incidencias: backend/incidencias.md
+    - Inventarios: backend/inventarios.md
 
 markdown_extensions:
   - admonition
