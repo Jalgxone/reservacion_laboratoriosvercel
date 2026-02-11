@@ -1,4 +1,4 @@
-# Bienvenido al Sistema de Reservación de Laboratorios
+# Bienvenido al Sistema de Reservación de Laboratorios (LabReserva)
 
 Este sistema es una solución integral diseñada para la gestión eficiente de espacios físicos, recursos técnicos y el seguimiento proactivo de incidencias en entornos educativos y corporativos.
 
