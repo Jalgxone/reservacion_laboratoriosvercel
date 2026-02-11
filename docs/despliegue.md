@@ -22,8 +22,6 @@ Dado que el sistema requiere soporte para PHP 8.2 y MySQL, se recomienda el uso 
 3. **Manejo de Errores**: Desactiva el modo de depuración (`display_errors`) para evitar mostrar información sensible del sistema a los usuarios finales.
 4. **Protección de Archivos**: Configura correctamente los permisos de las carpetas para que solo los archivos de la carpeta `public/` sean accesibles directamente desde el navegador.
 
----
-*Un despliegue correcto garantiza la estabilidad y seguridad de tus laboratorios.*
 ## Notas sobre el uso de clases en inglés en el backend
 
 El uso de nombres de clases y modelos en inglés en el backend responde a las siguientes razones:
