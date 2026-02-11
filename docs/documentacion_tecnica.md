@@ -96,3 +96,83 @@ El diseño se basa en un sistema de variables CSS (`public/css/variables.css`) q
 - **Menús Contextuales:** Dropdowns interactivos para el perfil del usuario administrados mediante JavaScript nativo.
 
 
+## Especificación de Vistas (Frontend)
+
+### Vistas de Autenticación
+
+- **Login (`auth/login.php`)**  
+Permite a los usuarios acceder al sistema mediante correo y contraseña. Presenta un formulario moderno, con validación de campos y mensajes de error contextualizados. El fondo utiliza una imagen institucional y el logo, reforzando la identidad visual.  
+- *Campos*: Email, Contraseña  
+- *Acciones*: Iniciar sesión, enlace a recuperación de contraseña  
+- *Feedback*: Errores de validación y alertas visuales
+
+- **Registro (`auth/register.php`)**  
+Facilita la creación de nuevas cuentas. El formulario solicita nombre, apellido, email, cédula, teléfono y contraseña, con validaciones estrictas.  
+- *Campos*: Nombre, Apellido, Email, Cédula, Teléfono, Contraseña, Confirmación  
+- *Acciones*: Registrar usuario  
+- *Feedback*: Mensajes de error por campo, alertas de éxito o fallo
+
+- **Recuperar Contraseña (`auth/forgot_password.php`)**  
+Permite solicitar un enlace de recuperación vía email. El diseño es similar al login, con énfasis en la seguridad y facilidad de uso.  
+- *Campos*: Email  
+- *Acciones*: Enviar enlace de recuperación  
+- *Feedback*: Mensajes de confirmación o error
+
+- **Restablecer Contraseña (`auth/reset_password.php`)**  
+Vista para establecer una nueva contraseña tras recibir el enlace de recuperación.  
+- *Campos*: Nueva contraseña, Confirmar contraseña  
+- *Acciones*: Actualizar contraseña  
+- *Feedback*: Validación de coincidencia y fortaleza
+
+- **Perfil (`auth/profile.php`)**  
+Muestra información personal del usuario, estadísticas de reservas y permite actualizar datos básicos.  
+- *Campos*: Nombre, Apellido, Email, Teléfono  
+- *Acciones*: Editar perfil  
+- *Feedback*: Mensajes de éxito/error, estadísticas visuales
+
+- **Dashboard (`auth/dashboard.php`)**  
+Panel de inicio tras autenticación. Resume accesos rápidos a laboratorios, horarios, reservas, inventario y usuarios según el rol.  
+- *Elementos*: Tarjetas de navegación, bienvenida personalizada  
+- *Acciones*: Acceso a módulos principales
+
+
+### Vistas de Gestión
+
+- **Laboratorios (`laboratorios/index.php`)**  
+Lista todos los laboratorios registrados, mostrando nombre, ubicación, capacidad y estado. Los administradores pueden crear, editar o eliminar laboratorios.  
+- *Acciones*: Crear, editar, eliminar laboratorio  
+- *Feedback*: Mensajes de confirmación y error
+
+- **Inventario (`inventarios/index.php`)**  
+Presenta el inventario de equipos, con filtros por nombre, estado y laboratorio. Permite registrar nuevos equipos, editar y dar de baja.  
+- *Acciones*: Crear, editar, filtrar, dar de baja  
+- *Feedback*: Badges de estado, alertas visuales
+
+- **Recursos (`recursos/index.php`)**  
+Gestiona categorías de equipos y recursos. Muestra cantidad, estado y observaciones.  
+- *Acciones*: Crear, editar, eliminar categoría  
+- *Feedback*: Badges de cantidad y estado
+
+- **Incidencias (`incidencias/index.php`)**  
+Listado de fallas reportadas en equipos. Permite registrar nuevas incidencias, editar y cambiar estado.  
+- *Acciones*: Crear, editar, cerrar incidencia  
+- *Feedback*: Tabla detallada, badges de gravedad y estado
+
+- **Horarios (`horarios/index.php`)**  
+Muestra un calendario semanal con la disponibilidad de laboratorios. Permite filtrar por laboratorio y navegar entre semanas.  
+- *Acciones*: Visualizar disponibilidad, filtrar, navegar  
+- *Feedback*: Calendario interactivo, colores por estado
+
+- **Reservas (`reservas/index.php`)**  
+Listado de reservas realizadas por el usuario o administrador. Muestra laboratorio, fechas, usuario, estado y motivo.  
+- *Acciones*: Crear, editar, cancelar reserva  
+- *Feedback*: Badges de estado, historial visual
+
+- **Usuarios (`usuarios/index.php`)**  
+Gestión de usuarios registrados. Permite crear, editar, activar/desactivar y asignar roles.  
+- *Acciones*: Crear, editar, cambiar estado, asignar rol  
+- *Feedback*: Tabla segmentada por rol, badges de estado
+
+Cada vista está diseñada para ser intuitiva, accesible y visualmente consistente, utilizando componentes reutilizables y estilos centralizados. Los formularios implementan validaciones tanto del lado del cliente como del servidor, garantizando la integridad de los datos y la experiencia del usuario.
+
+
