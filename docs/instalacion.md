@@ -39,4 +39,4 @@ Asegúrate de que el módulo **`mod_rewrite`** de Apache esté **activado**. Est
 
 ## Paso 6: Acceso al Sistema
 Abre tu navegador y entra en:
-`http://localhost/reservacion_laboratorios/public/`
+`http://localhost/reservacion_laboratorios/`

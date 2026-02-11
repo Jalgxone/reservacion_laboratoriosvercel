@@ -15,7 +15,7 @@ Este sistema es una solución integral diseñada para la gestión eficiente de e
 Para garantizar el funcionamiento óptimo del sistema, se requiere:
 
 - **PHP**: Versión 8.2 o superior (recomendada).
-- **Base de Datos**: MySQL 10.4 (MariaDB) o similar.
+- **Base de Datos**: MySQL 10.4  o similar.
 - **Servidor Web**: Apache con módulo `mod_rewrite` habilitado.
 - **Navegador**: Versiones recientes de Chrome, Firefox o Edge.
 
