@@ -16,7 +16,7 @@ Grupo 5
 
 ## Documentación del proyecto
 
-https://reservacion-laboratoriosvercel-cir3.vercel.app/
+https://reservacion-laboratoriosvercel.vercel.app/modernizacion/
 
 Se ha añadido un conjunto de documentos detallados en la carpeta `docs/` que cubren instalación, estructura del proyecto, uso y referencia de controladores/modelos.
 
