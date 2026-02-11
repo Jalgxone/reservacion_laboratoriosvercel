@@ -96,7 +96,7 @@ El diseño se basa en un sistema de variables CSS (`public/css/variables.css`) q
 - **Menús Contextuales:** Dropdowns interactivos para el perfil del usuario administrados mediante JavaScript nativo.
 
 
-## Especificación de Vistas (Frontend)
+## 5.4 Especificación de Vistas (Frontend)
 
 ### Vistas de Autenticación
 
