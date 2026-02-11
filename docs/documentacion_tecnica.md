@@ -96,9 +96,9 @@ El diseño se basa en un sistema de variables CSS (`public/css/variables.css`) q
 - **Menús Contextuales:** Dropdowns interactivos para el perfil del usuario administrados mediante JavaScript nativo.
 
 
-## 5.4 Especificación de Vistas (Frontend)
+## 6 Especificación de Vistas (Frontend)
 
-### Vistas de Autenticación
+### 6.1 Vistas de Autenticación
 
 - **Login (`auth/login.php`)**  
 Permite a los usuarios acceder al sistema mediante correo y contraseña. Presenta un formulario moderno, con validación de campos y mensajes de error contextualizados. El fondo utiliza una imagen institucional y el logo, reforzando la identidad visual.  
@@ -136,7 +136,7 @@ Panel de inicio tras autenticación. Resume accesos rápidos a laboratorios, hor
 - *Acciones*: Acceso a módulos principales
 
 
-### Vistas de Gestión
+### 6.2 Vistas de Gestión
 
 - **Laboratorios (`laboratorios/index.php`)**  
 Lista todos los laboratorios registrados, mostrando nombre, ubicación, capacidad y estado. Los administradores pueden crear, editar o eliminar laboratorios.  
