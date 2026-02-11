@@ -1,6 +1,6 @@
 # Estructura de Base de Datos
 
-El sistema utiliza **MySQL / MariaDB** para la persistencia de datos, operando bajo un esquema relacional diseñado para garantizar la integridad y el rendimiento.
+El sistema utiliza **MySQL** como motor para la persistencia de datos, operando bajo un esquema relacional diseñado para garantizar la integridad y el rendimiento.
 
 ## Diagrama de Entidad-Relación (ER)
 
