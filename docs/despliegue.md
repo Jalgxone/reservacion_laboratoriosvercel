@@ -14,7 +14,7 @@ Dado que el sistema requiere soporte para PHP 8.2 y MySQL, se recomienda el uso 
 
 ## Recomendaciones para Producción
 
-> [!IMPORTANT]
+> [Ojo]
 > Antes de pasar a producción, asegúrate de realizar los siguientes ajustes de seguridad:
 
 1. **Llaves de Encriptación**: Cambia la `APP_ENCRYPTION_KEY` por una cadena aleatoria y segura.
@@ -24,3 +24,12 @@ Dado que el sistema requiere soporte para PHP 8.2 y MySQL, se recomienda el uso 
 
 ---
 *Un despliegue correcto garantiza la estabilidad y seguridad de tus laboratorios.*
+## Notas sobre el uso de clases en inglés en el backend
+
+El uso de nombres de clases y modelos en inglés en el backend responde a las siguientes razones:
+
+- **Estándar internacional**: El inglés es el idioma predominante en la documentación técnica y en la mayoría de frameworks y librerías, lo que facilita la integración y el mantenimiento del código.
+- **Compatibilidad y escalabilidad**: Usar inglés permite que el proyecto sea más accesible para desarrolladores de diferentes países y facilita la colaboración internacional.
+- **Buenas prácticas**: Seguir convenciones globales mejora la comprensión del código y su interoperabilidad con otras herramientas y servicios.
+
+Esta decisión busca asegurar la calidad, mantenibilidad y proyección futura del sistema.
