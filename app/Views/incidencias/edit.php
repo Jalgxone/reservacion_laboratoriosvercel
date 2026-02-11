@@ -1,5 +1,6 @@
 <?php
-$title = "Editar Incidencia | Sistema de Reservación";
+$title = "Editar Incidencia";
+$errors = $errors ?? [];
 require __DIR__ . '/../_header.php';
 ?>
 
@@ -16,20 +17,16 @@ require __DIR__ . '/../_header.php';
     </div>
     
     <div style="padding: var(--espacio-md);">
-        <?php if (!empty($errors)): ?>
-            <div class="badge badge-error" style="width: 100%; margin-bottom: var(--espacio-md); padding: var(--espacio-sm);">
-                <?php foreach ($errors as $e) echo '<div>' . htmlspecialchars($e) . '</div>'; ?>
-            </div>
-        <?php endif; ?>
 
-        <form method="post" action="<?= $_SERVER['SCRIPT_NAME'] ?>?url=incidencias/update/<?= $incidencia['id_incidencia'] ?>">
+        <form method="post" action="<?= $_SERVER['SCRIPT_NAME'] ?>?url=incidencias/update/<?= $incidencia['id_incidencia'] ?>" novalidate>
             <div class="form-group">
                 <label for="id_equipo" class="form-label">Equipo</label>
                 <select id="id_equipo" name="id_equipo" class="form-control">
                     <?php foreach ($equipos as $eq): ?>
-                        <option value="<?= $eq['id_equipo'] ?>" <?= ($incidencia['id_equipo'] == $eq['id_equipo']) ? 'selected' : '' ?>><?= htmlspecialchars($eq['codigo_serial']) ?></option>
+                        <option value="<?= $eq['id_equipo'] ?>" <?= ($incidencia['id_equipo'] == $eq['id_equipo']) ? 'selected' : '' ?>><?= htmlspecialchars($eq['codigo_serial'] ?? 'N/A') ?></option>
                     <?php endforeach; ?>
                 </select>
+                <?php showFieldError('id_equipo', $errors); ?>
             </div>
 
             <div class="form-group">
@@ -45,11 +42,13 @@ require __DIR__ . '/../_header.php';
                         <input type="radio" name="gravedad" value="alta" <?= ($incidencia['nivel_gravedad'] ?? '') == 'alta' ? 'checked' : '' ?>> Alta
                     </label>
                 </div>
+                <?php showFieldError('nivel_gravedad', $errors); ?>
             </div>
 
             <div class="form-group">
                 <label for="descripcion_problema" class="form-label">Descripción Técnica</label>
                 <textarea id="descripcion_problema" name="descripcion_problema" class="form-control" rows="4"><?= htmlspecialchars($incidencia['descripcion_problema']) ?></textarea>
+                <?php showFieldError('descripcion_problema', $errors); ?>
             </div>
 
             <div class="form-group">

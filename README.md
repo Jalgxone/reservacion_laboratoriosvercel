@@ -1,4 +1,4 @@
-# reservacion_laboratorios
+# Reservacion_laboratorios
 Sistema de Reservación de Laboratorios: Gestión de inventario de equipos, horarios, asignación de recursos y reporte de incidencias técnicas.
 Grupo 5
 
@@ -16,11 +16,12 @@ Grupo 5
 
 ## Documentación del proyecto
 
+https://reservacion-laboratoriosvercel-cir3.vercel.app/
+
 Se ha añadido un conjunto de documentos detallados en la carpeta `docs/` que cubren instalación, estructura del proyecto, uso y referencia de controladores/modelos.
 
-- **Estructura y archivos:** `docs/estructura.md`
-- **Instalación (XAMPP/Windows):** `docs/instalacion.md`
-- **Uso y ejecución:** `docs/uso_y_ejecucion.md`
-- **Referencia de controladores y modelos:** `docs/api.md`
-
 Consulta esos archivos para instrucciones paso a paso y descripciones técnicas.
+
+Usuario unico de Administrador: jalgxone@outlook.com
+
+contraseña: 30336755

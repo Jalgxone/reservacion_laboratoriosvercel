@@ -25,7 +25,6 @@ class InventariosController extends Controller
         $this->requireRole([2]);
 
         $data = [
-            'codigo_serial' => $_POST['codigo_serial'] ?? '',
             'id_laboratorio' => $_POST['id_laboratorio'] ?? null,
             'id_categoria' => $_POST['id_categoria'] ?? null,
             'marca_modelo' => $_POST['marca_modelo'] ?? null,
@@ -34,9 +33,9 @@ class InventariosController extends Controller
 
         require_once __DIR__ . '/../../core/Validator.php';
         $rules = [
-            'codigo_serial' => 'required|minlen:2|unique:inventario,codigo_serial',
             'id_laboratorio' => 'required|int',
-            'id_categoria' => 'required|int'
+            'id_categoria' => 'required|int',
+            'marca_modelo' => 'required|minlen:5|proper_brand_format'
         ];
         $errors = Validator::validate($data, $rules);
         if (!empty($errors)) {
@@ -52,8 +51,7 @@ class InventariosController extends Controller
         try {
             $model->create($data);
             $_SESSION['flash'] = 'Equipo agregado al inventario.';
-            header('Location: ' . $_SERVER['SCRIPT_NAME'] . '?url=inventarios');
-            exit;
+            $this->redirect('inventarios');
         } catch (Exception $e) {
             error_log('InventariosController::store error: ' . $e->getMessage());
             $_SESSION['flash'] = 'Error al agregar equipo: ' . $e->getMessage();
@@ -72,8 +70,7 @@ class InventariosController extends Controller
         $model = $this->model('Inventario');
         $item = $model->getById($id);
         if (!$item) {
-            header('Location: ' . $_SERVER['SCRIPT_NAME'] . '?url=inventarios');
-            exit;
+            $this->redirect('inventarios');
         }
         $labModel = $this->model('Laboratorio');
         $labs = $labModel->getAll();
@@ -87,7 +84,6 @@ class InventariosController extends Controller
         $this->requireRole([2]);
 
         $data = [
-            'codigo_serial' => $_POST['codigo_serial'] ?? '',
             'id_laboratorio' => $_POST['id_laboratorio'] ?? null,
             'id_categoria' => $_POST['id_categoria'] ?? null,
             'marca_modelo' => $_POST['marca_modelo'] ?? null,
@@ -96,9 +92,9 @@ class InventariosController extends Controller
 
         require_once __DIR__ . '/../../core/Validator.php';
         $rules = [
-            'codigo_serial' => 'required|minlen:2',
             'id_laboratorio' => 'required|int',
-            'id_categoria' => 'required|int'
+            'id_categoria' => 'required|int',
+            'marca_modelo' => 'required|minlen:5|proper_brand_format'
         ];
         $errors = Validator::validate($data, $rules);
         if (!empty($errors)) {
@@ -113,15 +109,28 @@ class InventariosController extends Controller
         }
 
         $model = $this->model('Inventario');
+        $item = $model->getById($id);
+
         try {
+            if ($item['id_laboratorio'] != $data['id_laboratorio'] && $model->hasActiveReservations($id)) {
+                throw new Exception("No se puede mover el equipo de laboratorio porque el origen tiene reservas activas.");
+            }
+
+            if ($data['estado_operativo'] === 'Baja' && $model->hasActiveReservations($id)) {
+                throw new Exception("No se puede dar de baja el equipo porque el laboratorio tiene reservas activas.");
+            }
+
+            if ($data['estado_operativo'] === 'Baja') {
+                $data['esta_activo'] = 0;
+            }
+
             $model->update($id, $data);
+            
             $_SESSION['flash'] = 'Equipo actualizado.';
-            header('Location: ' . $_SERVER['SCRIPT_NAME'] . '?url=inventarios');
-            exit;
+            $this->redirect('inventarios');
         } catch (Exception $e) {
             error_log('InventariosController::update error: ' . $e->getMessage());
             $_SESSION['flash'] = 'Error al actualizar equipo: ' . $e->getMessage();
-            $item = $model->getById($id);
             $labModel = $this->model('Laboratorio');
             $labs = $labModel->getAll();
             $catModel = $this->model('Recurso');
@@ -133,8 +142,7 @@ class InventariosController extends Controller
     public function delete($id = null)
     {
         if (empty($_SESSION['user'])) {
-            header('Location: ' . $_SERVER['SCRIPT_NAME'] . '?url=auth');
-            exit;
+            $this->redirect('auth');
         }
 
         $model = $this->model('Inventario');
@@ -145,7 +153,26 @@ class InventariosController extends Controller
             error_log('InventariosController::delete error: ' . $e->getMessage());
             $_SESSION['flash'] = 'Error al eliminar equipo.';
         }
-        header('Location: ' . $_SERVER['SCRIPT_NAME'] . '?url=inventarios');
-        exit;
+        $this->redirect('inventarios');
+    }
+
+    public function toggleStatus($id = null)
+    {
+        $this->requireRole([2]);
+        if (!$id) {
+            $this->redirect('inventarios');
+        }
+
+        $model = $this->model('Inventario');
+        try {
+            if ($model->toggleStatus($id)) {
+                $_SESSION['flash'] = 'Estado del equipo actualizado.';
+            } else {
+                $_SESSION['error'] = 'No se pudo actualizar el estado del equipo.';
+            }
+        } catch (Exception $e) {
+            $_SESSION['error'] = $e->getMessage();
+        }
+        $this->redirect('inventarios');
     }
 }

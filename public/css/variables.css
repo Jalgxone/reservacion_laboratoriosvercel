@@ -1,38 +1,31 @@
-/* Variables Globales del Sistema */
 :root {
-    /* Paleta de Colores - Estilo Científico y Moderno */
-    --color-primario: #0f172a;       /* Azul muy oscuro (Slate 900) */
-    --color-primario-claro: #1e293b; /* Slate 800 */
-    --color-acento: #0ea5e9;         /* Azul cielo vibrante (Sky 500) */
-    --color-acento-hover: #0284c7;   /* Sky 600 */
-    --color-fondo: #f8fafc;          /* Slate 50 */
-    --color-superficie: #ffffff;     /* Blanco */
-    --color-texto: #334155;          /* Slate 700 */
-    --color-texto-claro: #64748b;    /* Slate 500 */
-    --color-borde: #e2e8f0;          /* Slate 200 */
-    
-    /* Estados */
-    --color-exito: #10b981;          /* Esmeralda */
-    --color-advertencia: #f59e0b;    /* Ambar */
-    --color-peligro: #ef4444;        /* Rojo */
-    
-    /* Tipografía */
+    --color-primario: #0f172a;
+    --color-primario-claro: #1e293b;
+    --color-acento: #0ea5e9;
+    --color-acento-hover: #0284c7;
+    --color-fondo: #f8fafc;
+    --color-superficie: #ffffff;
+    --color-texto: #334155;
+    --color-texto-claro: #64748b;
+    --color-borde: #e2e8f0;
+
+    --color-exito: #10b981;
+    --color-advertencia: #f59e0b;
+    --color-peligro: #ef4444;
+
     --fuente-principal: 'Inter', system-ui, -apple-system, sans-serif;
-    
-    /* Espaciado */
+
     --espacio-xs: 0.25rem;
     --espacio-sm: 0.5rem;
     --espacio-md: 1rem;
     --espacio-lg: 1.5rem;
     --espacio-xl: 2rem;
-    
-    /* Bordes y Sombras */
+
     --radio-borde: 0.5rem;
     --radio-borde-lg: 1rem;
     --sombra-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --sombra-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --sombra-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    
-    /* Transiciones */
-    --transicion: all 0.2sease-in-out;
+
+    --transicion: all 0.2s ease-in-out;
 }

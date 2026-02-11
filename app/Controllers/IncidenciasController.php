@@ -6,7 +6,6 @@ class IncidenciasController extends Controller
         $this->requireRole([2]);
         $model = $this->model('Incidencia');
         $incidencias = $model->getAll();
-        // also load equipos to allow quick reporting from index page
         $invModel = $this->model('Inventario');
         $equipos = $invModel ? $invModel->getAll() : [];
         $this->view('incidencias/index', ['incidencias' => $incidencias, 'equipos' => $equipos]);
@@ -14,7 +13,7 @@ class IncidenciasController extends Controller
 
     public function create()
     {
-        $this->requireRole([]); // Cualquier usuario logueado
+        $this->requireRole([]);
 
         $invModel = $this->model('Inventario');
         $equipos = $invModel->getAll();
@@ -23,7 +22,7 @@ class IncidenciasController extends Controller
 
     public function store()
     {
-        $this->requireRole([]); // Cualquier usuario logueado
+        $this->requireRole([]);
 
         require_once __DIR__ . '/../../core/Validator.php';
 
@@ -36,8 +35,9 @@ class IncidenciasController extends Controller
         ];
 
         $rules = [
-            'id_equipo' => 'required|int',
-            'descripcion_problema' => 'required|minlen:5'
+            'id_equipo' => 'required|int|exists:inventario,id_equipo',
+            'descripcion_problema' => 'required|minlen:10|maxlen:1000',
+            'nivel_gravedad' => 'required|in_list:baja,media,alta'
         ];
         $errors = Validator::validate($data, $rules);
         if (!empty($errors)) {
@@ -51,8 +51,7 @@ class IncidenciasController extends Controller
         try {
             $model->create($data);
             $_SESSION['flash'] = 'Incidencia reportada.';
-            header('Location: ' . $_SERVER['SCRIPT_NAME'] . '?url=incidencias');
-            exit;
+            $this->redirect('incidencias');
         } catch (Exception $e) {
             error_log('IncidenciasController::store error: ' . $e->getMessage());
             $_SESSION['flash'] = 'Error al reportar incidencia: ' . $e->getMessage();
@@ -67,8 +66,7 @@ class IncidenciasController extends Controller
         $model = $this->model('Incidencia');
         $inc = $model->getById($id);
         if (!$inc) {
-            header('Location: ' . $_SERVER['SCRIPT_NAME'] . '?url=incidencias');
-            exit;
+            $this->redirect('incidencias');
         }
         $invModel = $this->model('Inventario');
         $equipos = $invModel->getAll();
@@ -105,8 +103,7 @@ class IncidenciasController extends Controller
         try {
             $model->update($id, $data);
             $_SESSION['flash'] = 'Incidencia actualizada.';
-            header('Location: ' . $_SERVER['SCRIPT_NAME'] . '?url=incidencias');
-            exit;
+            $this->redirect('incidencias');
         } catch (Exception $e) {
             error_log('IncidenciasController::update error: ' . $e->getMessage());
             $_SESSION['flash'] = 'Error al actualizar incidencia: ' . $e->getMessage();
@@ -127,7 +124,6 @@ class IncidenciasController extends Controller
             error_log('IncidenciasController::delete error: ' . $e->getMessage());
             $_SESSION['flash'] = 'Error al eliminar incidencia.';
         }
-        header('Location: ' . $_SERVER['SCRIPT_NAME'] . '?url=incidencias');
-        exit;
+        $this->redirect('incidencias');
     }
 }

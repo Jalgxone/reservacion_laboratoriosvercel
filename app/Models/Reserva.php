@@ -59,7 +59,6 @@ class Reserva extends Model
         return $row;
     }
 
-    // check overlap helper
     protected function hasOverlap($labId, $start, $end, $excludeId = null)
     {
         $sql = "SELECT COUNT(*) as cnt FROM {$this->table} WHERE id_laboratorio = :lab AND NOT (fecha_fin <= :start OR fecha_inicio >= :end)";
@@ -76,7 +75,6 @@ class Reserva extends Model
 
     public function create($data)
     {
-        // ensure required fields
         $lab = $data['id_laboratorio'];
         $start = $data['fecha_inicio'];
         $end = $data['fecha_fin'];
@@ -84,14 +82,12 @@ class Reserva extends Model
             throw new Exception('Ya existe una reserva en ese intervalo para el laboratorio seleccionado.');
         }
 
-        // determine id_estado: use provided, else try to pick an existing estado, else create defaults
         $estadoId = $data['id_estado'] ?? null;
         if (empty($estadoId)) {
             $row = $this->db->query('SELECT id_estado FROM estados_reserva LIMIT 1')->fetch();
             if ($row && !empty($row['id_estado'])) {
                 $estadoId = $row['id_estado'];
             } else {
-                // seed some sensible defaults
                 $this->db->beginTransaction();
                 try {
                     $ins = $this->db->prepare('INSERT INTO estados_reserva (nombre_estado) VALUES (:n)');
@@ -100,7 +96,7 @@ class Reserva extends Model
                     $ins->execute(['n' => 'Cancelada']);
                     $this->db->commit();
                     $estadoId = $this->db->lastInsertId();
-                    // fetch first id (Pendiente) as default
+
                     $row2 = $this->db->query('SELECT id_estado FROM estados_reserva ORDER BY id_estado ASC LIMIT 1')->fetch();
                     if ($row2 && !empty($row2['id_estado'])) {
                         $estadoId = $row2['id_estado'];
@@ -137,14 +133,12 @@ class Reserva extends Model
             throw new Exception('La modificación genera solapamiento con otra reserva.');
         }
 
-        // determine estado id similar to create
         $estadoId = $data['id_estado'] ?? null;
         if (empty($estadoId)) {
             $row = $this->db->query('SELECT id_estado FROM estados_reserva LIMIT 1')->fetch();
             if ($row && !empty($row['id_estado'])) {
                 $estadoId = $row['id_estado'];
             } else {
-                // no estados exist -> create defaults
                 $this->db->beginTransaction();
                 try {
                     $ins = $this->db->prepare('INSERT INTO estados_reserva (nombre_estado) VALUES (:n)');

@@ -1,5 +1,7 @@
 <?php
-$title = "Nuevo Reporte | Sistema de Reservación";
+$title = "Nuevo Reporte";
+$errors = $errors ?? [];
+$old = $old ?? [];
 require __DIR__ . '/../_header.php';
 ?>
 
@@ -16,24 +18,17 @@ require __DIR__ . '/../_header.php';
     </div>
     
     <div style="padding: var(--espacio-md);">
-        <?php if (!empty($errors)): ?>
-            <div class="badge badge-error" style="width: 100%; margin-bottom: var(--espacio-md); padding: var(--espacio-sm);">
-                <strong>Errores detectados:</strong>
-                <ul style="margin-top: 5px; margin-left: 20px;">
-                    <?php foreach ($errors as $e) echo '<li>' . htmlspecialchars($e) . '</li>'; ?>
-                </ul>
-            </div>
-        <?php endif; ?>
 
-        <form method="post" action="<?= $_SERVER['SCRIPT_NAME'] ?>?url=incidencias/store">
+        <form method="post" action="<?= $appRoot ?>/incidencias/store" novalidate>
             <div class="form-group">
                 <label for="id_equipo" class="form-label">Equipo Afectado</label>
                 <select id="id_equipo" name="id_equipo" class="form-control" required>
                     <option value="">Seleccione el equipo...</option>
                     <?php foreach ($equipos as $eq): ?>
-                        <option value="<?= $eq['id_equipo'] ?>" <?= (isset($old['id_equipo']) && $old['id_equipo'] == $eq['id_equipo']) ? 'selected' : '' ?>><?= htmlspecialchars($eq['codigo_serial'] . ' - ' . ($eq['marca_modelo'] ?? '')) ?></option>
+                        <option value="<?= $eq['id_equipo'] ?>" <?= (isset($old['id_equipo']) && $old['id_equipo'] == $eq['id_equipo']) ? 'selected' : '' ?>><?= htmlspecialchars(($eq['codigo_serial'] ?? 'N/A') . ' - ' . ($eq['marca_modelo'] ?? '')) ?></option>
                     <?php endforeach; ?>
                 </select>
+                <?php showFieldError('id_equipo', $errors); ?>
             </div>
 
             <div class="form-group">
@@ -49,16 +44,18 @@ require __DIR__ . '/../_header.php';
                         <input type="radio" name="gravedad" value="alta" <?= (isset($old['nivel_gravedad']) && $old['nivel_gravedad'] === 'alta') ? 'checked' : '' ?>> Alta
                     </label>
                 </div>
+                <?php showFieldError('nivel_gravedad', $errors); ?>
             </div>
 
             <div class="form-group">
                 <label for="descripcion_problema" class="form-label">Descripción del Problema</label>
                 <textarea id="descripcion_problema" name="descripcion_problema" class="form-control" rows="6" placeholder="Describa detalladamente qué sucedió..."><?= htmlspecialchars($old['descripcion_problema'] ?? '') ?></textarea>
+                <?php showFieldError('descripcion_problema', $errors); ?>
             </div>
 
             <div style="margin-top: var(--espacio-lg); display: flex; gap: var(--espacio-md);">
                 <button type="submit" class="btn btn-primario">Enviar Reporte</button>
-                <a href="<?= $_SERVER['SCRIPT_NAME'] ?>?url=incidencias" class="btn btn-secundario">Cancelar</a>
+                <a href="<?= $appRoot ?>/incidencias" class="btn btn-secundario">Cancelar</a>
             </div>
         </form>
     </div>

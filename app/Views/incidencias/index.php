@@ -1,49 +1,8 @@
 <?php
-$title = "Incidencias | Sistema de Reservación";
+$title = "Incidencias";
 require __DIR__ . '/../_header.php';
 
 $incidencias = $incidencias ?? [];
-
-// Normalize rows logic (Preserved)
-foreach ($incidencias as &$inc) {
-    if (empty($inc['equipo_serial'])) {
-        if (!empty($inc['codigo_serial'])) $inc['equipo_serial'] = $inc['codigo_serial'];
-        elseif (!empty($inc['serial'])) $inc['equipo_serial'] = $inc['serial'];
-        else $inc['equipo_serial'] = '';
-    }
-    if (empty($inc['usuario'])) {
-        if (!empty($inc['nombre_completo'])) $inc['usuario'] = $inc['nombre_completo'];
-        elseif (!empty($inc['usuario_nombre'])) $inc['usuario'] = $inc['usuario_nombre'];
-        else $inc['usuario'] = '';
-    }
-    if (empty($inc['descripcion_problema']) && !empty($inc['descripcion'])) {
-        $inc['descripcion_problema'] = $inc['descripcion'];
-    }
-    if (!empty($inc['fecha_reporte'])) {
-        $ts = strtotime($inc['fecha_reporte']);
-        if ($ts !== false) {
-            $now = time();
-            $diff = $now - $ts;
-            if ($diff < 3600) $inc['when_human'] = 'Hace ' . intval($diff/60) . ' min';
-            elseif ($diff < 86400) $inc['when_human'] = 'Hace ' . intval($diff/3600) . ' h';
-            elseif ($diff < 172800) $inc['when_human'] = 'Ayer';
-            else $inc['when_human'] = date('d/m/Y', $ts);
-            $inc['fecha_reporte_fmt'] = date('d/m/Y H:i', $ts);
-        } else {
-            $inc['when_human'] = $inc['fecha_reporte'];
-            $inc['fecha_reporte_fmt'] = $inc['fecha_reporte'];
-        }
-    } else {
-        $inc['when_human'] = '-';
-        $inc['fecha_reporte_fmt'] = '-';
-    }
-
-    $g = strtolower(trim((string)($inc['nivel_gravedad'] ?? '')));
-    if ($g === 'alta') $inc['badge_class'] = 'badge-error';
-    elseif ($g === 'media') $inc['badge_class'] = 'badge-warning';
-    elseif ($g === 'baja') $inc['badge_class'] = 'badge-info';
-    else $inc['badge_class'] = 'badge-warning';
-}
 ?>
 
 <div class="pagina-cabecera">
@@ -52,13 +11,13 @@ foreach ($incidencias as &$inc) {
         <p class="pagina-subtitulo">Listado completo de fallas registradas en los equipos</p>
     </div>
     <div class="acciones">
-        <a class="btn btn-primario" href="<?= $_SERVER['SCRIPT_NAME'] ?>?url=incidencias/create">Nueva Incidencia</a>
+        <a class="btn btn-primario" href="<?= $appRoot ?>/incidencias/create">Nueva Incidencia</a>
     </div>
 </div>
 
 <div class="card">
     <div class="card-header">
-        <h3>Historial de Incidencias</h3>
+        <h3>Detalles del Reporte</h3>
     </div>
     
     <div class="tabla-contenedor">
@@ -76,15 +35,50 @@ foreach ($incidencias as &$inc) {
                         <th>Gravedad</th>
                         <th>Estado</th>
                         <th>Descripción</th>
-                        <th>Acciones</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody id="incidencias-body">
-                    <?php foreach ($incidencias as $inc): ?>
+                    <?php foreach ($incidencias as $inc):
+                        if (empty($inc['usuario'])) {
+                            if (!empty($inc['nombre_completo'])) $inc['usuario'] = $inc['nombre_completo'];
+                            elseif (!empty($inc['usuario_nombre'])) $inc['usuario'] = $inc['usuario_nombre'];
+                            else $inc['usuario'] = '';
+                        }
+                        if (empty($inc['descripcion_problema']) && !empty($inc['descripcion'])) {
+                            $inc['descripcion_problema'] = $inc['descripcion'];
+                        }
+                        if (!empty($inc['fecha_reporte'])) {
+                            $ts = strtotime($inc['fecha_reporte']);
+                            if ($ts !== false) {
+                                $now = time();
+                                $diff = $now - $ts;
+                                if ($diff < 3600) $inc['when_human'] = 'Hace ' . intval($diff/60) . ' min';
+                                elseif ($diff < 86400) $inc['when_human'] = 'Hace ' . intval($diff/3600) . ' h';
+                                elseif ($diff < 172800) $inc['when_human'] = 'Ayer';
+                                else $inc['when_human'] = date('d/m/Y', $ts);
+                                $inc['fecha_reporte_fmt'] = date('d/m/Y H:i', $ts);
+                            } else {
+                                $inc['when_human'] = $inc['fecha_reporte'];
+                                $inc['fecha_reporte_fmt'] = $inc['fecha_reporte'];
+                            }
+                        } else {
+                            $inc['when_human'] = '-';
+                            $inc['fecha_reporte_fmt'] = '-';
+                        }
+
+                        $g = strtolower(trim((string)($inc['nivel_gravedad'] ?? '')));
+                        if ($g === 'alta') $inc['badge_class'] = 'badge-error';
+                        elseif ($g === 'media') $inc['badge_class'] = 'badge-warning';
+                        elseif ($g === 'baja') $inc['badge_class'] = 'badge-info';
+                        else $inc['badge_class'] = 'badge-warning';
+                    ?>
                         <tr>
                             <td>
-                                <?= htmlspecialchars($inc['fecha_reporte_fmt']) ?><br>
-                                <small style="color: var(--color-texto-claro);"><?= htmlspecialchars($inc['when_human']) ?></small>
+                                <div style="line-height: 1.4;">
+                                    <strong><?= htmlspecialchars($inc['when_human']) ?></strong><br>
+                                    <small style="color: var(--color-texto-claro);"><?= htmlspecialchars($inc['fecha_reporte_fmt']) ?></small>
+                                </div>
                             </td>
                             <td><strong><?= htmlspecialchars($inc['equipo_serial'] ?? 'N/A') ?></strong></td>
                             <td><?= htmlspecialchars($inc['usuario'] ?? 'Desconocido') ?></td>
@@ -103,8 +97,12 @@ foreach ($incidencias as &$inc) {
                             </td>
                             <td>
                                 <div style="display: flex; gap: 8px;">
-                                    <a href="<?= $_SERVER['SCRIPT_NAME'] ?>?url=incidencias/edit/<?= urlencode($inc['id_incidencias'] ?? $inc['id_incidencia'] ?? '') ?>" class="btn btn-secundario btn-sm">Editar</a>
-                                    <a href="<?= $_SERVER['SCRIPT_NAME'] ?>?url=incidencias/delete/<?= urlencode($inc['id_incidencias'] ?? $inc['id_incidencia'] ?? '') ?>" onclick="return confirm('¿Eliminar incidencia?')" class="btn btn-error btn-sm">Eliminar</a>
+                                    <a href="<?= $appRoot ?>/incidencias/edit/<?= urlencode($inc['id_incidencias'] ?? $inc['id_incidencia'] ?? '') ?>" class="btn btn-secundario btn-sm" title="Editar">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                    </a>
+                                    <a href="<?= $appRoot ?>/incidencias/delete/<?= urlencode($inc['id_incidencias'] ?? $inc['id_incidencia'] ?? '') ?>" data-confirm="¿Eliminar incidencia?" class="btn btn-error btn-sm" title="Eliminar">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                    </a>
                                 </div>
                             </td>
                         </tr>

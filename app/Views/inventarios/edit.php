@@ -1,5 +1,6 @@
 <?php
-$title = "Editar Equipo | Sistema de Reservación";
+$errors = $errors ?? [];
+$hideGlobalAlerts = true;
 require __DIR__ . '/../_header.php';
 ?>
 
@@ -16,24 +17,11 @@ require __DIR__ . '/../_header.php';
     </div>
     
     <div style="padding: var(--espacio-md);">
-        <?php if (!empty($errors)): ?>
-            <div class="badge badge-error" style="width: 100%; margin-bottom: var(--espacio-md); padding: var(--espacio-sm);">
-                <?php
-                if (array_values($errors) === $errors) {
-                    foreach ($errors as $e) echo '<div>' . htmlspecialchars($e) . '</div>';
-                } else {
-                    foreach ($errors as $field => $msgs) {
-                        foreach ((array)$msgs as $m) echo '<div>' . htmlspecialchars($m) . '</div>';
-                    }
-                }
-                ?>
-            </div>
-        <?php endif; ?>
 
-        <form method="post" action="<?= $_SERVER['SCRIPT_NAME'] ?>?url=inventarios/update/<?= $item['id_equipo'] ?>">
+        <form method="post" action="<?= $_SERVER['SCRIPT_NAME'] ?>?url=inventarios/update/<?= $item['id_equipo'] ?>" novalidate>
             <div class="form-group">
-                <label for="codigo_serial" class="form-label">Número de Serie / Código</label>
-                <input type="text" id="codigo_serial" name="codigo_serial" class="form-control" value="<?= htmlspecialchars($item['codigo_serial'] ?? '') ?>" required>
+                <label class="form-label">ID de Inventario</label>
+                <input type="text" class="form-control" value="<?= htmlspecialchars($item['codigo_serial'] ?? '') ?>" readonly style="background-color: var(--color-fondo-claro);">
             </div>
 
             <div class="grid" style="grid-template-columns: 1fr 1fr; gap: var(--espacio-md);">
@@ -44,6 +32,7 @@ require __DIR__ . '/../_header.php';
                                 <option value="<?= $l['id_laboratorio'] ?>" <?= (isset($old['id_laboratorio']) ? ($old['id_laboratorio'] == $l['id_laboratorio']) : ($item['id_laboratorio'] == $l['id_laboratorio'])) ? 'selected' : '' ?>><?= htmlspecialchars($l['nombre']) ?></option>
                             <?php endforeach; ?>
                     </select>
+                    <?php showFieldError('id_laboratorio', $errors); ?>
                 </div>
                 
                 <div class="form-group">
@@ -53,12 +42,15 @@ require __DIR__ . '/../_header.php';
                             <option value="<?= $c['id_categoria'] ?>" <?= (isset($old['id_categoria']) ? ($old['id_categoria'] == $c['id_categoria']) : ($item['id_categoria'] == $c['id_categoria'])) ? 'selected' : '' ?>><?= htmlspecialchars($c['nombre_categoria']) ?></option>
                         <?php endforeach; ?>
                     </select>
+                    <?php showFieldError('id_categoria', $errors); ?>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="marca_modelo" class="form-label">Marca y Modelo</label>
-                <input type="text" id="marca_modelo" name="marca_modelo" class="form-control" value="<?= htmlspecialchars($old['marca_modelo'] ?? $item['marca_modelo'] ?? '') ?>">
+                <input type="text" id="marca_modelo" name="marca_modelo" class="form-control" value="<?= htmlspecialchars($old['marca_modelo'] ?? $item['marca_modelo'] ?? '') ?>" placeholder="Ej: Dell Precision 3660">
+                <small style="color: var(--color-texto-suave); display: block; margin-top: 4px;">Formato requerido: Marca Modelo (Ej: Dell Latitude, HP ProBook)</small>
+                <?php showFieldError('marca_modelo', $errors); ?>
             </div>
 
             <div class="form-group">
@@ -70,9 +62,20 @@ require __DIR__ . '/../_header.php';
                 </select>
             </div>
             
-            <div style="margin-top: var(--espacio-lg); display: flex; gap: var(--espacio-md);">
-                <button type="submit" class="btn btn-primario">Guardar Cambios</button>
-                <a href="<?= $_SERVER['SCRIPT_NAME'] ?>?url=inventarios" class="btn btn-secundario">Cancelar</a>
+            <div style="margin-top: var(--espacio-lg); display: flex; gap: var(--espacio-md); flex-wrap: wrap; justify-content: flex-end;">
+                <a href="<?= $_SERVER['SCRIPT_NAME'] ?>?url=inventarios" class="btn btn-secundario" style="min-width: 120px; text-align: center;">Cancelar</a>
+                <button type="submit" class="btn btn-primario" style="min-width: 160px;">Guardar Cambios</button>
+
+                <?php 
+                $inlineMsgs = getSystemMessages();
+                if (!empty($inlineMsgs)): 
+                    foreach ($inlineMsgs as $m): ?>
+                        <div class="alert-inline alert-inline-<?= $m['type'] ?>" style="width: 100%; margin-top: 1rem;">
+                            <span></span>
+                            <?= htmlspecialchars($m['content']) ?>
+                        </div>
+                    <?php endforeach;
+                endif; ?>
             </div>
         </form>
     </div>

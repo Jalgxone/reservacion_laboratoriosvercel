@@ -1,20 +1,23 @@
 # Bienvenido al Sistema de Reservación de Laboratorios
 
-Este sistema permite la gestión eficiente de espacios físicos, recursos técnicos y control de incidencias en laboratorios universitarios.
+Este sistema es una solución integral diseñada para la gestión eficiente de espacios físicos, recursos técnicos y el seguimiento proactivo de incidencias en entornos educativos y corporativos.
 
 ## Características Principales
 
-- **Gestión de Laboratorios**: Control total sobre las salas y su disponibilidad.
-- **Calendario Interactivo**: Visualización dinámica de horarios y reservas.
-- **Inventario y Recursos**: Seguimiento detallado de equipos y materiales.
-- **Control de Incidencias**: Reporte y resolución de problemas técnicos.
-- **Seguridad y Roles**: Acceso restringido basado en perfiles de usuario.
+- **Gestión Inteligente de Laboratorios**: Control administrativo sobre salas, capacidades y disponibilidad en tiempo real.
+- **Calendario y Horarios Dinámicos**: Visualización interactiva de la ocupación semanal, facilitando la planificación de actividades.
+- **Control de Inventario Tecnológico**: Seguimiento detallado de equipos, categorización y estados operativo/mantenimiento.
+- **Reporte de Incidencias**: Sistema centralizado para notificar y resolver fallas técnicas con niveles de prioridad.
+- **Seguridad Basada en Roles (RBAC)**: Niveles de acceso diferenciados para Estudiantes y Administradores, garantizando la integridad de la información.
 
 ## Requisitos del Sistema
 
-- **PHP**: 8.0 o superior.
-- **Base de Datos**: MySQL / MariaDB.
-- **Servidor Web**: Apache (XAMPP recomendado).
+Para garantizar el funcionamiento óptimo del sistema, se requiere:
+
+- **PHP**: Versión 8.2 o superior (recomendada).
+- **Base de Datos**: MySQL 10.4 (MariaDB) o similar.
+- **Servidor Web**: Apache con módulo `mod_rewrite` habilitado.
+- **Navegador**: Versiones recientes de Chrome, Firefox o Edge.
 
 ---
-*Documentación generada con Material for MkDocs.*
+*Documentación técnica diseñada para desarrolladores y administradores de sistemas.*

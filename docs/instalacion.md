@@ -1,41 +1,42 @@
 # Guía de Instalación
 
-Sigue estos pasos para poner en marcha el sistema en tu entorno local.
+Sigue estos pasos estructurados para desplegar el sistema en tu entorno de desarrollo local de manera exitosa.
 
 ## Requisitos Previos
-- **PHP 8.0+**
-- **MySQL / MariaDB**
-- **XAMPP** (recomendado para Windows)
-- **Composer** (para gestión de dependencias)
 
-## Paso 1: Clonar o Descargar
-Descarga el código fuente en tu carpeta de servidor (ej. `C:/xampp/htdocs/reservacion_laboratorios`).
+- **PHP 8.2+**: Asegúrate de tener habilitadas las extensiones `pdo_mysql` y `mbstring`.
+- **MySQL**: Motor de base de datos para la persistencia.
+- **XAMPP**: Recomendados para entornos Windows.
+- **Composer**: Necesario para instalar las dependencias de backend.
 
-## Paso 2: Configuración de Base de Datos
-1. Abre **phpMyAdmin**.
-2. Crea una base de datos llamada `laboratory`.
-3. Importa el archivo SQL ubicado en `db/Lab.sql`.
+## Paso 1: Preparación del Directorio
+Clona o descarga el proyecto dentro de la carpeta raíz de tu servidor web:
+`C:/xampp/htdocs/reservacion_laboratorios`
 
-## Paso 3: Configuración del Sistema
-Edita el archivo `config/database.php` con tus credenciales:
+## Paso 2: Despliegue de Base de Datos
+1. Accede a tu gestor de base de datos (ej. **phpMyAdmin**).
+2. Crea una base de datos nueva con el nombre `laboratory`.
+3. Importa el script SQL que se encuentra en: `db/Lab.sql`.
+
+## Paso 3: Configuración de Conexiones
+Localiza el archivo `app/config/database.php` (o similar según tu estructura) y ajusta las credenciales de acceso:
 
 ```php
 $host = '127.0.0.1';
 $db   = 'laboratory';
 $user = 'root';
-$pass = ''; // Tu contraseña de MySQL
+$pass = ''; // Tu contraseña de base de datos
 ```
 
 ## Paso 4: Instalación de Dependencias
-Abre una terminal en la raíz del proyecto y ejecuta:
+Abre una terminal en la carpeta raíz del proyecto y ejecuta:
 ```bash
 composer install
 ```
 
-## Paso 5: Acceso
-Abre tu navegador y dirígete a:
-`http://localhost/reservacion_laboratorios/public/`
+## Paso 5: Verificación del Servidor Web
+Asegúrate de que el módulo **`mod_rewrite`** de Apache esté **activado**. Esto es crítico para el correcto funcionamiento del enrutamiento MVC.
 
----
-> [!IMPORTANT]
-> Asegúrate de que el módulo `mod_rewrite` de Apache esté activado para que las rutas amigables funcionen correctamente.
+## Paso 6: Acceso al Sistema
+Abre tu navegador y entra en:
+`http://localhost/reservacion_laboratorios/public/`

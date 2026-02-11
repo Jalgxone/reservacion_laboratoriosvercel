@@ -1,30 +1,24 @@
 # Modernización y Arquitectura
 
-El sistema ha evolucionado de una estructura tradicional a una aplicación web moderna y fluida.
+El sistema ha sido transformado para ofrecer una experiencia de usuario superior, pasando de una lógica procedimental a una arquitectura moderna basada en estándares de la industria.
 
-## Arquitectura MVC
-El proyecto sigue el patrón **Modelo-Vista-Controlador**:
-- **Modelos**: Gestión de datos y lógica de base de datos (`app/Models`).
-- **Vistas**: Plantillas PHP dinámicas e interactivas (`app/Views`).
-- **Controladores**: Orquestación de peticiones y respuestas (`app/Controllers`).
+## Arquitectura de Referencia: MVC
+El proyecto se fundamenta en el patrón **Model-View-Controller (MVC)**, lo que permite una separación clara de responsabilidades:
 
-## Mejoras AJAX y Fetch
-Se han integrado las siguientes funcionalidades asíncronas:
+- **Modelos (`app/Models`)**: Encapsulan la lógica de acceso a datos y reglas de negocio complejas.
+- **Vistas (`app/Views`)**: Utilizan plantillas PHP modulares que garantizan una interfaz consistente y profesional.
+- **Controladores (`app/Controllers`)**: Actúan como puentes, procesando las entradas del usuario y coordinando la respuesta adecuada.
 
-### 1. Borrado en Caliente
-Se eliminan registros sin recargar la página mediante Fetch API.
-```javascript
-fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-    .then(data => window.showToast(data.message, 'success'));
-```
+## Mejoras de Reactividad (AJAX & Fetch)
+Para mejorar la fluidez, se han sustituido las recargas de página tradicionales por interacciones asíncronas en puntos críticos:
 
-### 2. Calendario Dinámico
-El módulo de horarios se actualiza instantáneamente al cambiar parámetros, redibujando el DOM progresivamente.
+### 1. Gestión de Registros en Caliente
+El borrado de elementos (Usuarios, Laboratorios, Equipos) utiliza **Fetch API** para comunicarse con el servidor. El DOM se actualiza progresivamente, eliminando la fila del registro únicamente tras la confirmación exitosa del backend.
 
-### 3. Filtros y Búsqueda en Tiempo Real
-El inventario utiliza lógica de cliente para filtrar cientos de equipos en milisegundos sin latencia de red.
+### 2. Sistema de Notificaciones Inteligente
+Se ha integrado un motor de alertas centralizado que captura los mensajes de sesión y los renderiza como bloques estáticos elegantes, mejorando drásticamente el feedback que recibe el usuario ante errores de validación.
 
-## Sistema de Notificaciones (Toasts)
-Se implementó un motor de alertas global que:
-- Detecta mensajes flash de PHP automáticamente.
-- Proporciona feedback visual profesional y no intrusivo.
+## Motor de Validación Extensible
+El sistema cuenta con un componente `Validator` dedicado que procesa reglas complejas (regex, unicidad en BD, formatos regionales) de manera declarativa, asegurando que solo los datos limpios y coherentes sean procesados por la aplicación.
+
+

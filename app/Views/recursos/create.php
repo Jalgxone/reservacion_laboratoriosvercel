@@ -1,5 +1,7 @@
 <?php
-$title = "Nueva Categoría | Sistema de Reservación";
+$errors = $errors ?? [];
+$old = $old ?? [];
+$hideGlobalAlerts = true;
 require __DIR__ . '/../_header.php';
 ?>
 
@@ -16,16 +18,21 @@ require __DIR__ . '/../_header.php';
     </div>
     
     <div style="padding: var(--espacio-md);">
-        <?php if (!empty($errors)): ?>
-            <div class="badge badge-error" style="width: 100%; margin-bottom: var(--espacio-md); padding: var(--espacio-sm);">
-                <?php foreach ($errors as $e) echo '<div>' . htmlspecialchars($e) . '</div>'; ?>
-            </div>
-        <?php endif; ?>
 
-        <form method="post" action="<?= $_SERVER['SCRIPT_NAME'] ?>?url=recursos/store">
+        <form method="post" action="<?= $_SERVER['SCRIPT_NAME'] ?>?url=recursos/store" novalidate>
             <div class="form-group">
                 <label for="nombre_categoria" class="form-label">Nombre de la Categoría</label>
-                <input type="text" id="nombre_categoria" name="nombre_categoria" class="form-control" value="<?= htmlspecialchars($old['nombre_categoria'] ?? '') ?>" placeholder="Ej. Laptops, Proyectores..." required>
+                <select id="nombre_categoria" name="nombre_categoria" class="form-control" required>
+                    <option value="" disabled <?= empty($old['nombre_categoria']) ? 'selected' : '' ?>>Seleccione una categoría...</option>
+                    <?php if (isset($categories)): ?>
+                        <?php foreach ($categories as $cat): ?>
+                            <option value="<?= htmlspecialchars($cat) ?>" <?= ($old['nombre_categoria'] ?? '') === $cat ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($cat) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+                <?php showFieldError('nombre_categoria', $errors); ?>
             </div>
 
             <div class="form-group">
@@ -40,9 +47,20 @@ require __DIR__ . '/../_header.php';
                 </label>
             </div>
             
-            <div style="margin-top: var(--espacio-lg); display: flex; gap: var(--espacio-md);">
-                <button type="submit" class="btn btn-primario">Agregar Categoría</button>
-                <a href="<?= $_SERVER['SCRIPT_NAME'] ?>?url=recursos" class="btn btn-secundario">Cancelar</a>
+            <div style="margin-top: var(--espacio-lg); display: flex; gap: var(--espacio-md); flex-wrap: wrap; justify-content: flex-end;">
+                <a href="<?= $_SERVER['SCRIPT_NAME'] ?>?url=recursos" class="btn btn-secundario" style="min-width: 120px; text-align: center;">Cancelar</a>
+                <button type="submit" class="btn btn-primario" style="min-width: 160px;">Agregar Categoría</button>
+
+                <?php 
+                $inlineMsgs = getSystemMessages();
+                if (!empty($inlineMsgs)): 
+                    foreach ($inlineMsgs as $m): ?>
+                        <div class="alert-inline alert-inline-<?= $m['type'] ?>" style="width: 100%; margin-top: 1rem;">
+                            <span></span>
+                            <?= htmlspecialchars($m['content']) ?>
+                        </div>
+                    <?php endforeach;
+                endif; ?>
             </div>
         </form>
     </div>

@@ -17,6 +17,40 @@ class Usuario extends Model
         return $stmt->fetch();
     }
 
+    public function getStats($id)
+    {
+        $stats = [
+            'total' => 0,
+            'pendientes' => 0,
+            'confirmadas' => 0,
+            'canceladas' => 0,
+            'proxima' => null
+        ];
+
+        $sql = "SELECT id_estado, COUNT(*) as cnt FROM reservas WHERE id_usuario = :id GROUP BY id_estado";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        $rows = $stmt->fetchAll();
+
+        foreach ($rows as $row) {
+            $stats['total'] += $row['cnt'];
+            if ($row['id_estado'] == 1) $stats['pendientes'] = $row['cnt'];
+            if ($row['id_estado'] == 2) $stats['confirmadas'] = $row['cnt'];
+            if ($row['id_estado'] == 3) $stats['canceladas'] = $row['cnt'];
+        }
+
+        $sql = "SELECT r.*, l.nombre as laboratorio_nombre 
+                FROM reservas r 
+                JOIN laboratorios l ON r.id_laboratorio = l.id_laboratorio 
+                WHERE r.id_usuario = :id AND r.fecha_inicio > NOW() AND r.id_estado != 3 
+                ORDER BY r.fecha_inicio ASC LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        $stats['proxima'] = $stmt->fetch();
+
+        return $stats;
+    }
+
     public function authenticate($email, $password)
     {
         $user = $this->getByEmail($email);
@@ -31,7 +65,6 @@ class Usuario extends Model
 
     public function create($data)
     {
-        // verificar email único
         $stmt = $this->db->prepare("SELECT COUNT(*) as cnt FROM {$this->table} WHERE email = :e");
         $stmt->execute(['e' => $data['email']]);
         $r = $stmt->fetch();
@@ -39,16 +72,27 @@ class Usuario extends Model
             throw new Exception('El email ya está registrado.');
         }
 
+        $stmt = $this->db->prepare("SELECT COUNT(*) as cnt FROM {$this->table} WHERE cedula_identidad = :c");
+        $stmt->execute(['c' => $data['cedula_identidad'] ?? ($data['cedula'] ?? '')]);
+        $r = $stmt->fetch();
+        if ($r && $r['cnt'] > 0) {
+            throw new Exception('La cédula ya está registrada.');
+        }
+
         require_once __DIR__ . '/../../core/Security.php';
         $hash = Security::hashPassword($data['password']);
 
-        $sql = "INSERT INTO {$this->table} (nombre_completo, email, password_hash, id_rol) VALUES (:nombre, :email, :pass, :rol)";
+        $sql = "INSERT INTO {$this->table} (nombre_completo, apellido, cedula_identidad, telefono, email, password_hash, id_rol, estado) VALUES (:nombre, :apellido, :cedula, :telefono, :email, :pass, :rol, :estado)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'nombre' => $data['nombre_completo'],
+            'apellido' => $data['apellido'] ?? '',
+            'cedula' => $data['cedula'] ?? '',
+            'telefono' => $data['telefono'] ?? '',
             'email' => $data['email'],
             'pass' => $hash,
             'rol' => $data['id_rol'] ?? 1,
+            'estado' => $data['estado'] ?? 'pendiente'
         ]);
         return $this->db->lastInsertId();
     }
@@ -58,7 +102,6 @@ class Usuario extends Model
         $fields = [];
         $params = ['id' => $id];
 
-        // Verificar email único si se está actualizando
         if (!empty($data['email'])) {
             $stmt = $this->db->prepare("SELECT COUNT(*) as cnt FROM {$this->table} WHERE email = :e AND id_usuario != :id");
             $stmt->execute(['e' => $data['email'], 'id' => $id]);
@@ -70,9 +113,44 @@ class Usuario extends Model
             $params['email'] = $data['email'];
         }
 
+        if (!empty($data['cedula_identidad']) || !empty($data['cedula'])) {
+            $cedulaValue = $data['cedula_identidad'] ?? $data['cedula'];
+            $stmt = $this->db->prepare("SELECT COUNT(*) as cnt FROM {$this->table} WHERE cedula_identidad = :c AND id_usuario != :id");
+            $stmt->execute(['c' => $cedulaValue, 'id' => $id]);
+            $r = $stmt->fetch();
+            if ($r && $r['cnt'] > 0) {
+                throw new Exception('La cédula ya está en uso por otro usuario.');
+            }
+        }
+
         if (isset($data['nombre_completo'])) {
             $fields[] = "nombre_completo = :nombre";
             $params['nombre'] = $data['nombre_completo'];
+        }
+
+        if (isset($data['apellido'])) {
+            $fields[] = "apellido = :apellido";
+            $params['apellido'] = $data['apellido'];
+        }
+
+        if (isset($data['cedula_identidad']) || isset($data['cedula'])) {
+            $fields[] = "cedula_identidad = :cedula";
+            $params['cedula'] = $data['cedula_identidad'] ?? ($data['cedula'] ?? '');
+        }
+
+        if (isset($data['telefono'])) {
+            $fields[] = "telefono = :telefono";
+            $params['telefono'] = $data['telefono'];
+        }
+
+        if (isset($data['id_rol'])) {
+            $fields[] = "id_rol = :id_rol";
+            $params['id_rol'] = $data['id_rol'];
+        }
+
+        if (isset($data['estado'])) {
+            $fields[] = "estado = :estado";
+            $params['estado'] = $data['estado'];
         }
 
         if (!empty($data['password'])) {
@@ -82,7 +160,7 @@ class Usuario extends Model
         }
 
         if (empty($fields)) {
-            return true; // Nada que actualizar
+            return true;
         }
 
         $sql = "UPDATE {$this->table} SET " . implode(', ', $fields) . " WHERE id_usuario = :id";
@@ -113,6 +191,19 @@ class Usuario extends Model
     {
         $sql = "UPDATE {$this->table} SET reset_token = NULL, reset_expires = NULL WHERE id_usuario = :id";
         $stmt = $this->db->prepare($sql);
+        return $stmt->execute(['id' => $id]);
+    }
+
+    public function getAll()
+    {
+        $sql = "SELECT u.*, r.nombre_rol FROM {$this->table} u LEFT JOIN roles r ON u.id_rol = r.id_rol ORDER BY u.id_usuario DESC";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll();
+    }
+
+    public function delete($id)
+    {
+        $stmt = $this->db->prepare("UPDATE {$this->table} SET estado = 'inactivo' WHERE id_usuario = :id");
         return $stmt->execute(['id' => $id]);
     }
 }

@@ -1,8 +1,8 @@
 site_name: Sistema de Reservación de Laboratorios
 site_description: Documentación oficial del sistema de gestión de laboratorios universitarios.
 site_author: Personal Administrativo
-repo_name: reservacion_laboratoriosvercel
-repo_url: https://github.com/Jalgxone/reservacion_laboratoriosvercel
+repo_name: Proyect-Reservacion
+repo_url: https://github.com/user/reservacion-laboratorios
 
 theme:
   name: material
@@ -58,4 +58,3 @@ markdown_extensions:
       emoji_generator: !!python/name:pymdownx.emoji.to_svg
   - pymdownx.tabbed:
       alternate_style: true
-

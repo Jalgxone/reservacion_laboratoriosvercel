@@ -1,5 +1,7 @@
 <?php
-$title = "Crear Laboratorio | Sistema de Reservación";
+$title = "Crear Laboratorio";
+$errors = $errors ?? [];
+$hideGlobalAlerts = true;
 require __DIR__ . '/../_header.php';
 ?>
 
@@ -16,38 +18,27 @@ require __DIR__ . '/../_header.php';
     </div>
     
     <div style="padding: var(--espacio-md);">
-        <?php if (!empty($errors ?? [])): ?>
-            <div class="badge badge-error" style="width: 100%; margin-bottom: var(--espacio-md); padding: var(--espacio-sm);">
-                <ul style="margin: 0; padding-left: 20px;">
-                    <?php if (array_values($errors) === $errors): ?>
-                        <?php foreach ($errors as $e): ?>
-                            <li><?= htmlspecialchars($e) ?></li>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <?php foreach ($errors as $field => $msgs): ?>
-                            <?php foreach ((array)$msgs as $m): ?>
-                                <li><?= htmlspecialchars($m) ?></li>
-                            <?php endforeach; ?>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </ul>
-            </div>
-        <?php endif; ?>
 
-        <form method="post" action="<?= $_SERVER['SCRIPT_NAME'] ?>?url=laboratorios/store">
+        <form method="post" action="<?= $_SERVER['SCRIPT_NAME'] ?>?url=laboratorios/store" novalidate>
             <div class="form-group">
                 <label for="nombre" class="form-label">Nombre del Laboratorio</label>
-                <input type="text" id="nombre" name="nombre" class="form-control" value="<?= htmlspecialchars($nombre ?? '') ?>" required placeholder="Ej. Laboratorio de Cómputo A">
+                <input type="text" id="nombre" name="nombre" class="form-control" value="<?= htmlspecialchars($nombre ?? '') ?>" required placeholder="Ej. Computación #1, Sala A">
+                <?php showFieldError('nombre', $errors); ?>
+                <small style="color: var(--color-texto-claro); font-size: 0.8rem;">Solo letras, números, espacios, comas y #.</small>
             </div>
             
             <div class="form-group">
                 <label for="ubicacion" class="form-label">Ubicación / Edificio</label>
-                <input type="text" id="ubicacion" name="ubicacion" class="form-control" value="<?= htmlspecialchars($ubicacion ?? '') ?>" placeholder="Ej. Edificio 1, Planta Alta">
+                <input type="text" id="ubicacion" name="ubicacion" class="form-control" value="<?= htmlspecialchars($ubicacion ?? '') ?>" placeholder="Ej. Edificio #2, Planta Baja">
+                <?php showFieldError('ubicacion', $errors); ?>
+                <small style="color: var(--color-texto-claro); font-size: 0.8rem;">Solo letras, números, espacios, comas y #.</small>
             </div>
             
             <div class="form-group">
-                <label for="capacidad" class="form-label">Capacidad Máxima (personas)</label>
-                <input type="number" id="capacidad" name="capacidad" class="form-control" value="<?= htmlspecialchars($capacidad ?? '') ?>" placeholder="Ej. 30">
+                <label for="capacidad_personas" class="form-label">Capacidad Máxima (personas)</label>
+                <input type="number" id="capacidad_personas" name="capacidad_personas" class="form-control" value="<?= htmlspecialchars($capacidad_personas ?? '') ?>" placeholder="Valor entre 10 y 50" min="10" max="50">
+                <?php showFieldError('capacidad_personas', $errors); ?>
+                <small style="color: var(--color-texto-claro); font-size: 0.8rem;">Mínimo 10, Máximo 50 personas.</small>
             </div>
             
             <div class="form-group">
@@ -57,9 +48,20 @@ require __DIR__ . '/../_header.php';
                 </label>
             </div>
             
-            <div style="margin-top: var(--espacio-lg); display: flex; gap: var(--espacio-md);">
-                <button type="submit" class="btn btn-primario">Crear Laboratorio</button>
-                <a href="<?= $_SERVER['SCRIPT_NAME'] ?>?url=laboratorios" class="btn btn-secundario">Cancelar</a>
+            <div style="margin-top: var(--espacio-lg); display: flex; gap: var(--espacio-md); flex-wrap: wrap; justify-content: flex-end;">
+                <a href="<?= $_SERVER['SCRIPT_NAME'] ?>?url=laboratorios" class="btn btn-secundario" style="min-width: 120px; text-align: center;">Cancelar</a>
+                <button type="submit" class="btn btn-primario" style="min-width: 160px;">Crear Laboratorio</button>
+
+                <?php 
+                $inlineMsgs = getSystemMessages();
+                if (!empty($inlineMsgs)): 
+                    foreach ($inlineMsgs as $m): ?>
+                        <div class="alert-inline alert-inline-<?= $m['type'] ?>" style="width: 100%; margin-top: 1rem;">
+                            <span></span>
+                            <?= htmlspecialchars($m['content']) ?>
+                        </div>
+                    <?php endforeach;
+                endif; ?>
             </div>
         </form>
     </div>

@@ -3,10 +3,8 @@ class LaboratoriosController extends Controller
 {
     public function index()
     {
-        // proteger ruta: requerir autenticación
         if (empty($_SESSION['user'])) {
-            header('Location: ' . $_SERVER['SCRIPT_NAME'] . '?url=auth');
-            exit;
+            $this->redirect('auth');
         }
         $model = $this->model('Laboratorio');
         $labs = $model ? $model->getAll() : [];
@@ -28,18 +26,28 @@ class LaboratoriosController extends Controller
         $data = [
             'nombre' => trim($_POST['nombre'] ?? ''),
             'ubicacion' => trim($_POST['ubicacion'] ?? ''),
-            'capacidad' => $_POST['capacidad'] ?? 0,
+            'capacidad_personas' => $_POST['capacidad_personas'] ?? 0,
             'esta_activo' => isset($_POST['esta_activo']) ? 1 : 0,
         ];
 
         $rules = [
-            'nombre' => 'required|minlen:3|maxlen:255',
-            'ubicacion' => 'required|maxlen:255',
-            'capacidad' => 'required|int'
+            'nombre' => 'required|alphanumeric_special|minlen:3|maxlen:255',
+            'ubicacion' => 'required|alphanumeric_special|maxlen:255',
+            'capacidad_personas' => 'required|int|min_val:10|max_val:50'
         ];
-        $errors = Validator::validate($data, $rules);
+        $errors = Validator::validate($data, $rules, [
+            'nombre' => 'nombre del laboratorio',
+            'ubicacion' => 'ubicación',
+            'capacidad_personas' => 'capacidad'
+        ]);
         if (!empty($errors)) {
-            $this->view('laboratorios/create', ['errors' => $errors, 'nombre' => $data['nombre'], 'ubicacion' => $data['ubicacion'], 'capacidad' => $data['capacidad'], 'esta_activo' => $data['esta_activo']]);
+            $this->view('laboratorios/create', [
+                'errors' => $errors, 
+                'nombre' => $data['nombre'], 
+                'ubicacion' => $data['ubicacion'], 
+                'capacidad_personas' => $data['capacidad_personas'], 
+                'esta_activo' => $data['esta_activo']
+            ]);
             return;
         }
 
@@ -47,12 +55,17 @@ class LaboratoriosController extends Controller
         try {
             $model->create($data);
             $_SESSION['flash'] = 'Laboratorio creado correctamente.';
-            header('Location: ' . $_SERVER['SCRIPT_NAME'] . '?url=laboratorios');
-            exit;
+            $this->redirect('laboratorios');
         } catch (Exception $e) {
             error_log('LaboratoriosController::store error: ' . $e->getMessage());
             $_SESSION['flash'] = 'Error al crear laboratorio: ' . $e->getMessage();
-            $this->view('laboratorios/create', ['errors' => [$e->getMessage()], 'nombre' => $data['nombre'], 'ubicacion' => $data['ubicacion'], 'capacidad' => $data['capacidad'], 'esta_activo' => $data['esta_activo']]);
+            $this->view('laboratorios/create', [
+                'errors' => [$e->getMessage()], 
+                'nombre' => $data['nombre'], 
+                'ubicacion' => $data['ubicacion'], 
+                'capacidad_personas' => $data['capacidad_personas'], 
+                'esta_activo' => $data['esta_activo']
+            ]);
         }
     }
 
@@ -63,8 +76,7 @@ class LaboratoriosController extends Controller
         $model = $this->model('Laboratorio');
         $lab = $model->getById($id);
         if (!$lab) {
-            header('Location: ' . $_SERVER['SCRIPT_NAME'] . '?url=laboratorios');
-            exit;
+            $this->redirect('laboratorios');
         }
         $this->view('laboratorios/edit', ['lab' => $lab]);
     }
@@ -78,16 +90,20 @@ class LaboratoriosController extends Controller
         $data = [
             'nombre' => trim($_POST['nombre'] ?? ''),
             'ubicacion' => trim($_POST['ubicacion'] ?? ''),
-            'capacidad' => $_POST['capacidad'] ?? 0,
+            'capacidad_personas' => $_POST['capacidad_personas'] ?? 0,
             'esta_activo' => isset($_POST['esta_activo']) ? 1 : 0,
         ];
 
         $rules = [
-            'nombre' => 'required|minlen:3|maxlen:255',
-            'ubicacion' => 'required|maxlen:255',
-            'capacidad' => 'required|int'
+            'nombre' => 'required|alphanumeric_special|minlen:3|maxlen:255',
+            'ubicacion' => 'required|alphanumeric_special|maxlen:255',
+            'capacidad_personas' => 'required|int|min_val:10|max_val:50'
         ];
-        $errors = Validator::validate($data, $rules);
+        $errors = Validator::validate($data, $rules, [
+            'nombre' => 'nombre del laboratorio',
+            'ubicacion' => 'ubicación',
+            'capacidad_personas' => 'capacidad'
+        ]);
         if (!empty($errors)) {
             $model = $this->model('Laboratorio');
             $lab = $model->getById($id);
@@ -99,8 +115,7 @@ class LaboratoriosController extends Controller
         try {
             $model->update($id, $data);
             $_SESSION['flash'] = 'Laboratorio actualizado.';
-            header('Location: ' . $_SERVER['SCRIPT_NAME'] . '?url=laboratorios');
-            exit;
+            $this->redirect('laboratorios');
         } catch (Exception $e) {
             error_log('LaboratoriosController::update error: ' . $e->getMessage());
             $_SESSION['flash'] = 'Error al actualizar laboratorio: ' . $e->getMessage();
@@ -126,7 +141,7 @@ class LaboratoriosController extends Controller
         } catch (Exception $e) {
             error_log('LaboratoriosController::delete error: ' . $e->getMessage());
             
-            // Detectar error de integridad referencial (Foreign Key constraint)
+
             $msg = 'Error al eliminar laboratorio.';
             if ($e instanceof PDOException && $e->getCode() == '23000') {
                 $msg = 'No se puede eliminar el laboratorio porque tiene recursos o reservas asociadas.';
@@ -137,7 +152,22 @@ class LaboratoriosController extends Controller
             }
             $_SESSION['flash'] = $msg;
         }
-        header('Location: ' . $_SERVER['SCRIPT_NAME'] . '?url=laboratorios');
-        exit;
+        $this->redirect('laboratorios');
+    }
+
+    public function toggleStatus($id = null)
+    {
+        $this->requireRole([2]);
+        if (!$id) {
+            $this->redirect('laboratorios');
+        }
+
+        $model = $this->model('Laboratorio');
+        if ($model->toggleStatus($id)) {
+            $_SESSION['flash'] = 'Estado del laboratorio actualizado.';
+        } else {
+            $_SESSION['error'] = 'No se pudo actualizar el estado del laboratorio.';
+        }
+        $this->redirect('laboratorios');
     }
 }

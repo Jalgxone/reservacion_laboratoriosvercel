@@ -41,7 +41,14 @@ class Laboratorio extends Model
 
     public function delete($id)
     {
-        $stmt = $this->db->prepare("DELETE FROM {$this->table} WHERE id_laboratorio = :id");
+        $stmt = $this->db->prepare("UPDATE {$this->table} SET esta_activo = 0 WHERE id_laboratorio = :id");
+        return $stmt->execute(['id' => $id]);
+    }
+
+    public function toggleStatus($id)
+    {
+        $sql = "UPDATE {$this->table} SET esta_activo = 1 - esta_activo WHERE id_laboratorio = :id";
+        $stmt = $this->db->prepare($sql);
         return $stmt->execute(['id' => $id]);
     }
 }

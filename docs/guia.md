@@ -1,26 +1,27 @@
 # Guía de Uso del Sistema
 
-Esta guía detalla las operaciones básicas para los usuarios del sistema.
+Esta guía describe los procesos operativos clave para interactuar con el sistema de manera eficiente, aprovechando las mejoras de interfaz y usabilidad implementadas.
 
-## 1. Dashboard y Navegación
-Al iniciar sesión, accederás al panel principal donde verás accesos directos a todos los módulos disponibles según tu rol.
+## 1. Experiencia de Usuario y Feedback
+El sistema utiliza un motor de notificaciones tipo **"Pillow Style"**. Estos mensajes aparecen en la parte superior para informarte sobre el éxito o error de tus acciones:
+- **Éxito**: Bloques verdes que confirman operaciones guardadas.
+- **Error**: Bloques rojos detallados que indican fallos de validación o del sistema.
 
 ## 2. Gestión de Laboratorios
-- **Ver Listado**: Accede a "Laboratorios" para ver las salas.
-- **Crear**: Pulsa "Nuevo Laboratorio" y completa los campos.
-- **Borrado AJAX**: Puedes eliminar salas directamente desde la tabla. El sistema confirmará la acción y actualizará la lista sin recargar.
+En el módulo de "Laboratorios", los administradores pueden gestionar la infraestructura física.
+- **Interacción Ágil**: El borrado de laboratorios se realiza mediante tecnología AJAX, eliminando el registro de la vista instantáneamente sin necesidad de recargar la página completa.
 
-## 3. Reservaciones de Espacios
-- **Crear Reserva**: Ve a "Reservas" > "Crear nueva reserva". Selecciona el laboratorio, fecha y hora.
-- **Horarios**: Usa el módulo "Horarios" para ver la disponibilidad semanal de cada laboratorio de forma visual.
+## 3. Reservaciones y Disponibilidad
+- **Formulario Inteligente**: Al crear una reserva, el sistema valida en tiempo real que las fechas sean coherentes (la fecha de fin debe ser posterior a la de inicio) y que se respeten los horarios de operación configurados.
+- **Visualizador de Horarios**: Consulta la disponibilidad semanal de cada sala de forma visual antes de realizar una solicitud.
 
-## 4. Control de Inventario
-- **Búsqueda**: Usa el buscador en tiempo real para localizar equipos.
-- **Filtros**: Puedes filtrar por estado (Operativo, En Reparación, Baja) y ubicación.
-- **Paginación**: La tabla muestra 5 elementos por página para mayor claridad.
+## 4. Gestión de Inventario
+- **Formato Estricto de Hardware**: Al registrar nuevos equipos, el sistema exige el formato oficial `Marca Modelo` (ej. "HP EliteBook"). Esto garantiza la limpieza de la base de datos para futuros reportes de mantenimiento.
+- **Paginación Dinámica**: Las tablas de inventario muestran 5 elementos por página, permitiendo una navegación fluida y organizada.
 
 ## 5. Reporte de Incidencias
-Si un equipo falla:
-1. Haz clic en "Reportar Incidencia".
-2. Identifica el equipo por su serial.
-3. Describe el problema y el nivel de gravedad.
+Si detectas un problema con un equipo:
+1. Accede a "Reportar Incidencia".
+2. Selecciona el equipo afectado.
+3. Describe el problema y asigna un **Nivel de Gravedad** (Baja, Media, Alta). Esto permitirá al administrador priorizar las reparaciones.
+

@@ -1,5 +1,4 @@
 <?php
-// Defensive coding: Ensure variables are defined to prevent errors
 $weekStart = $weekStart ?? date('Y-m-d', strtotime('last sunday'));
 $weekEnd = $weekEnd ?? date('Y-m-d', strtotime('next saturday'));
 $laboratorios = $laboratorios ?? [];
@@ -9,12 +8,12 @@ $prevWeek = $prevWeek ?? date('Y-m-d', strtotime('-1 week'));
 $nextWeek = $nextWeek ?? date('Y-m-d', strtotime('+1 week'));
 ?>
 <?php
-$title = "Horarios | Sistema de Reservación";
+$title = "Horarios";
 require __DIR__ . '/../_header.php';
 ?>
 
 <style>
-    /* Estilos específicos para el calendario/horario */
+
     .calendario-header {
         display: grid;
         grid-template-columns: 80px repeat(7, 1fr);
@@ -104,8 +103,7 @@ require __DIR__ . '/../_header.php';
             </div>
             
             <div class="filtros-horario" style="margin-bottom: var(--espacio-md); display: flex; align-items: center; gap: var(--espacio-md);">
-                <form id="filtro-lab-form" method="get" action="<?= $_SERVER['SCRIPT_NAME'] ?>" style="display: flex; gap: 10px; align-items: center;">
-                    <input type="hidden" name="url" value="horarios">
+                <form id="filtro-lab-form" method="get" action="<?= $appRoot ?>/horarios" style="display: flex; gap: 10px; align-items: center;" novalidate>
                     <input type="hidden" id="current-date" name="date" value="<?= $weekStart ?>">
                     <select id="select-lab" name="lab" class="form-control">
                         <?php foreach ($laboratorios as $l): ?>
@@ -117,9 +115,9 @@ require __DIR__ . '/../_header.php';
                 </form>
                 
                 <div class="nav-semana">
-                    <a href="<?= $_SERVER['SCRIPT_NAME'] ?>?url=horarios&date=<?= $prevWeek ?>&lab=<?= $selectedLab ?>" id="btn-prev-week" class="nav-btn">Anterior</a>
+                    <a href="<?= $appRoot ?>/horarios?date=<?= $prevWeek ?>&lab=<?= $selectedLab ?>" id="btn-prev-week" class="nav-btn">Anterior</a>
                     <span>|</span>
-                    <a href="<?= $_SERVER['SCRIPT_NAME'] ?>?url=horarios&date=<?= $nextWeek ?>&lab=<?= $selectedLab ?>" id="btn-next-week" class="nav-btn">Siguiente</a>
+                    <a href="<?= $appRoot ?>/horarios?date=<?= $nextWeek ?>&lab=<?= $selectedLab ?>" id="btn-next-week" class="nav-btn">Siguiente</a>
                 </div>
             </div>
         </div>
@@ -132,7 +130,6 @@ require __DIR__ . '/../_header.php';
                 </div>
             </div>
             
-            <!-- Calendario Semanal Grid -->
             <div id="calendario-grid-container">
                 <div class="calendario-header" id="calendario-header">
                     <div class="cal-col-header">Hora</div>
@@ -148,28 +145,25 @@ require __DIR__ . '/../_header.php';
                 </div>
                 <div class="calendario-body" id="calendario-body">
                     <?php 
-                    // Generate hours from 07:00 to 20:00
                     for ($h = 7; $h <= 20; $h++): 
                         $timeStr = sprintf('%02d:00', $h);
                         $nextTimeStr = sprintf('%02d:00', $h + 1);
                     ?>
-                        <!-- Hour Row -->
                         <div class="cal-hora"><?= $timeStr ?></div>
                         
                         <?php for ($d = 0; $d < 7; $d++): 
                             $currentDayDate = date('Y-m-d', strtotime("+$d days", strtotime($weekStart)));
                             
-                            // Define slot boundaries for this specific day and hour
                             $slotStartTimestamp = strtotime("$currentDayDate $h:00:00");
                             $slotEndTimestamp = strtotime("$currentDayDate " . ($h+1) . ":00:00");
 
-                            // Check for events in this cell
+
                             $cellEvents = [];
                             foreach ($reservas as $res) {
                                 $resStartTimestamp = strtotime($res['fecha_inicio']);
                                 $resEndTimestamp = strtotime($res['fecha_fin']);
 
-                                // Check overlap: Start < SlotEnd AND End > SlotStart
+
                                 if ($resStartTimestamp < $slotEndTimestamp && $resEndTimestamp > $slotStartTimestamp) {
                                     $cellEvents[] = $res;
                                 }
@@ -177,21 +171,13 @@ require __DIR__ . '/../_header.php';
                         ?>
                             <div class="cal-celda">
                                 <?php foreach ($cellEvents as $evt): 
-                                    // Identify if this is the first block of the reservation visible in the grid to show header
-                                    // A simplified check: if the reservation starts within this slot OR if it started before but this is the first slot of the day (07:00)
-                                    // Better visual: if reservation starts >= slotStart (it begins here)
-                                    // OR if it's 7am and reservation started before?
                                     $resStartTimestamp = strtotime($evt['fecha_inicio']);
                                     $isStart = ($resStartTimestamp >= $slotStartTimestamp && $resStartTimestamp < $slotEndTimestamp);
-                                    // Also show text if it started before but continues here, maybe simplified just show title always or handled via CSS?
-                                    // Let's stick to "Is Start" for the header info to avoid repetition, OR if it's the top of the day
-                                    // But user might want to see who it is even if it started earlier.
-                                    // Let's enable header if it is the start OR if it is the first block we render (07:00) and it started earlier
+
                                     $resStartTimestamp = strtotime($evt['fecha_inicio']);
                                     $isStart = ($resStartTimestamp >= $slotStartTimestamp && $resStartTimestamp < $slotEndTimestamp);
                                     if ($h == 7 && $resStartTimestamp < $slotStartTimestamp) $isStart = true;
                                     
-                                    // Determine class based on content (simple heuristic)
                                     $motivo = strtolower($evt['motivo_uso'] ?? '');
                                     $estado = strtolower($evt['nombre_estado'] ?? '');
                                     $evtClass = 'evento-reservado';
@@ -263,8 +249,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const rangoTitulo = document.getElementById('rango-fechas-titulo');
     const inputDate = document.getElementById('current-date');
 
+    let isUpdating = false;
     function updateCalendar(url) {
-        // Mostrar estado de carga
+        if (isUpdating) return;
+        isUpdating = true;
+
         gridBody.style.opacity = '0.5';
         
         fetch(url, {
@@ -272,18 +261,20 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            // 1. Actualizar títulos e inputs
+            isUpdating = false;
+            // ... rest of the logic
+
             const start = new Date(data.weekStart + 'T00:00:00');
             const end = new Date(data.weekEnd + 'T00:00:00');
             rangoTitulo.innerText = `Semana del ${start.getDate().toString().padStart(2, '0')}/${(start.getMonth()+1).toString().padStart(2, '0')} al ${end.getDate().toString().padStart(2, '0')}/${(end.getMonth()+1).toString().padStart(2, '0')}`;
             inputDate.value = data.weekStart;
             
-            // 2. Actualizar links de navegación
-            const baseUrl = '<?= $_SERVER['SCRIPT_NAME'] ?>?url=horarios';
-            btnPrev.href = `${baseUrl}&date=${data.prevWeek}&lab=${data.selectedLab}`;
-            btnNext.href = `${baseUrl}&date=${data.nextWeek}&lab=${data.selectedLab}`;
+
+            const baseUrl = '<?= $appRoot ?>/horarios';
+            btnPrev.href = `${baseUrl}?date=${data.prevWeek}&lab=${data.selectedLab}`;
+            btnNext.href = `${baseUrl}?date=${data.nextWeek}&lab=${data.selectedLab}`;
             
-            // 3. Redibujar Header (Fechas)
+
             const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
             const headerHtml = ['<div class="cal-col-header">Hora</div>'];
             for(let i=0; i<7; i++) {
@@ -296,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             gridHeader.innerHTML = headerHtml.join('');
 
-            // 4. Redibujar Body (Celdas)
+
             let bodyHtml = '';
             for (let h = 7; h <= 20; h++) {
                 const timeStr = h.toString().padStart(2, '0') + ':00';
@@ -310,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const slotStart = new Date(`${currentDayDate}T${h.toString().padStart(2, '0')}:00:00`).getTime();
                     const slotEnd = new Date(`${currentDayDate}T${(h+1).toString().padStart(2, '0')}:00:00`).getTime();
 
-                    // Filtrar eventos
+
                     const cellEvents = data.reservas.filter(res => {
                         const resStart = new Date(res.fecha_inicio.replace(' ', 'T')).getTime();
                         const resEnd = new Date(res.fecha_fin.replace(' ', 'T')).getTime();
@@ -380,14 +371,14 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(err => {
             console.error('Fetch error:', err);
+            isUpdating = false;
             window.showToast('Error al conectar con el servidor.', 'error');
             gridBody.style.opacity = '1';
         });
     }
 
-    // Event Listeners
     selectLab.addEventListener('change', () => {
-        const url = `<?= $_SERVER['SCRIPT_NAME'] ?>?url=horarios&lab=${selectLab.value}&date=${inputDate.value}`;
+        const url = `<?= $appRoot ?>/horarios?lab=${selectLab.value}&date=${inputDate.value}`;
         updateCalendar(url);
     });
 
@@ -395,8 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             updateCalendar(btn.href);
-            // Actualizar URL en el navegador sin recargar (opcional pero recomendado)
-            window.history.pushState({}, '', btn.href);
+            
         });
     });
 });

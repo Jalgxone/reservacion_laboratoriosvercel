@@ -1,38 +1,33 @@
 # Estructura de Base de Datos
 
-El sistema utiliza **MySQL** como motor de persistencia, con una arquitectura de 7 tablas altamente relacionadas para garantizar la integridad referencial.
+El sistema utiliza **MySQL / MariaDB** para la persistencia de datos, operando bajo un esquema relacional diseñado para garantizar la integridad y el rendimiento.
 
-## Diagrama Digital (ER)
+## Diagrama de Entidad-Relación (ER)
 
 ```mermaid
 erDiagram
     USUARIO }|--|| ROL : "tiene un"
     USUARIO ||--o{ RESERVA : "realiza"
     LABORATORIO ||--o{ RESERVA : "es reservado"
-    LABORATORIO ||--o{ INVENTARIO : "contiene"
-    INVENTARIO }|--|| CATEGORIA_EQUIPO : "pertenece a"
+    LABORATORIO ||--o{ INVENTARIO : "alberga"
+    INVENTARIO }|--|| CATEGORIA_EQUIPO : "se clasifica en"
     INVENTARIO ||--o{ INCIDENCIA : "genera"
-    RESERVA }|--|| ESTADO_RESERVA : "tiene un"
+    USUARIO ||--o{ INCIDENCIA : "reporta"
+    RESERVA }|--|| ESTADO_RESERVA : "posee un"
 ```
 
-## Diccionario de Datos
+## Diccionario de Datos (Resumen de Tablas)
 
-### Tablas de Identidad
-- **`usuarios`**: Almacena `nombre_completo`, `email`, `password_hash` y campos para la recuperación de contraseña (`reset_token`).
-- **`roles`**: Define los niveles de acceso. Predeterminados: 1 (Cliente), 2 (Administrador).
+### Identidad y Accesos
+- **`usuarios`**: Contiene el perfil completo (`nombre_completo`, `apellido`, `cedula_identidad`, `telefono`, `email`). Gestiona el estado de activación de la cuenta y tokens de recuperación.
+- **`roles`**: Define los niveles de privilegio (`Administrador`, `Cliente`).
 
-### Tablas de Infraestructura
-- **`laboratorios`**: Define las salas físicas, su `ubicacion`, `capacidad` y estado de activación.
+### Gestión de Infraestructura
+- **`laboratorios`**: Almacena `nombre`, `ubicacion` y la `capacidad_personas`.
+- **`reservas`**: Punto de unión entre usuarios y laboratorios. Registra los rangos de `fecha_inicio` / `fecha_fin` y el `id_estado`.
+- **`estados_reserva`**: Catálogo histórico (Pendiente, Confirmada, Cancelada).
 
-### Tablas de Reservas
-- **`reservas`**: El núcleo del sistema. Registra `fecha_inicio`, `fecha_fin` y el `motivo_uso`. Utiliza una relación triple con usuarios, laboratorios y estados.
-- **`estados_reserva`**: Catálogo que define si una reserva está Pendiente, Confirmada o Cancelada.
-
-### Tablas de Activos (Inventario)
-- **`inventario`**: Registro individual de cada equipo mediante `codigo_serial`. Relacionado con un laboratorio y una categoría.
-- **`categorias_equipo`**: Agrupa equipos (ej. Computadora, Proyector). Incluye el campo `requiere_mantenimiento_mensual`.
-- **`incidencias`**: Registro de fallas técnicas. Incluye `id_equipo`, `descripcion_problema`, `fecha_reporte` y un indicador de si está `resuelto`.
-
----
-> [!TIP]
-> Puedes encontrar el script de creación completo en la ruta `/db/Lab.sql` dentro del repositorio del proyecto.
+### Gestión de Activos
+- **`inventario`**: Registro técnico individual con `codigo_serial`, `marca_modelo` y `estado_operativo` (Operativo, En Reparación, Baja).
+- **`categorias_equipo`**: Clasificación jerárquica (Computadora, Proyector) con seguimiento de mantenimiento mensual.
+- **`incidencias`**: Detalle de fallas técnicas enviadas por los usuarios, vinculadas a un equipo específico y con niveles de gravedad configurables.

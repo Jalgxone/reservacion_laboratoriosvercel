@@ -3,7 +3,7 @@ require_once __DIR__ . '/../config/security.php';
 
 class Security
 {
-    // Cifrado simétrico para campos que necesiten confidencialidad
+
     public static function encrypt($plaintext)
     {
         if ($plaintext === null) return null;
@@ -24,7 +24,7 @@ class Security
         return openssl_decrypt($cipher, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
     }
 
-    // Envoltorio para contraseñas
+
     public static function hashPassword($password)
     {
         return password_hash($password, PASSWORD_DEFAULT);

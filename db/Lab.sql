@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 07, 2026 at 05:10 AM
+-- Generation Time: Feb 11, 2026 at 03:45 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -34,17 +34,18 @@ CREATE TABLE `categorias_equipo` (
   `nombre_categoria` varchar(50) NOT NULL,
   `requiere_mantenimiento_mensual` tinyint(1) DEFAULT 0,
   `cantidad` int(11) DEFAULT 0,
-  `observacion` varchar(255) NOT NULL
+  `observacion` varchar(255) NOT NULL,
+  `esta_activo` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `categorias_equipo`
 --
 
-INSERT INTO `categorias_equipo` (`id_categoria`, `nombre_categoria`, `requiere_mantenimiento_mensual`, `cantidad`, `observacion`) VALUES
-(1, 'Computadora', 1, 0, ''),
-(2, 'Proyector', 0, 0, ''),
-(3, 'Impresora', 0, 0, '');
+INSERT INTO `categorias_equipo` (`id_categoria`, `nombre_categoria`, `requiere_mantenimiento_mensual`, `cantidad`, `observacion`, `esta_activo`) VALUES
+(1, 'Computadora', 1, 0, '', 1),
+(2, 'Proyector', 0, 0, '', 1),
+(3, 'Impresora', 0, 0, '', 1);
 
 -- --------------------------------------------------------
 
@@ -82,15 +83,6 @@ CREATE TABLE `incidencias` (
   `nivel_gravedad` enum('Baja','Media','Alta') NOT NULL DEFAULT 'Media'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `incidencias`
---
-
-INSERT INTO `incidencias` (`id_incidencia`, `id_equipo`, `id_usuario_reporta`, `descripcion_problema`, `fecha_reporte`, `resuelto`, `nivel_gravedad`) VALUES
-(1, 1, 5, 'asdasasd', '2026-02-06 06:53:50', 0, 'Media'),
-(7, 1, 5, 'asd', '2026-02-06 17:32:13', 0, 'Media'),
-(8, 2, 5, 'asdsad', '2026-02-06 17:32:19', 1, 'Media');
-
 -- --------------------------------------------------------
 
 --
@@ -103,16 +95,9 @@ CREATE TABLE `inventario` (
   `id_laboratorio` int(11) NOT NULL,
   `id_categoria` int(11) NOT NULL,
   `marca_modelo` varchar(100) DEFAULT NULL,
-  `estado_operativo` enum('Operativo','En Reparación','Baja') DEFAULT 'Operativo'
+  `estado_operativo` enum('Operativo','En Reparación','Baja') DEFAULT 'Operativo',
+  `esta_activo` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `inventario`
---
-
-INSERT INTO `inventario` (`id_equipo`, `codigo_serial`, `id_laboratorio`, `id_categoria`, `marca_modelo`, `estado_operativo`) VALUES
-(1, 'asd', 1, 1, 'asdsad', 'Operativo'),
-(2, '12124124', 1, 1, 'laptop', 'Operativo');
 
 -- --------------------------------------------------------
 
@@ -127,14 +112,6 @@ CREATE TABLE `laboratorios` (
   `capacidad_personas` int(11) NOT NULL,
   `esta_activo` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `laboratorios`
---
-
-INSERT INTO `laboratorios` (`id_laboratorio`, `nombre`, `ubicacion`, `capacidad_personas`, `esta_activo`) VALUES
-(1, 'Sala Prueba', 'Edificio X', 10, 1),
-(2, 'asd', 'lugarcito', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -151,15 +128,6 @@ CREATE TABLE `reservas` (
   `id_estado` int(11) NOT NULL,
   `motivo_uso` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `reservas`
---
-
-INSERT INTO `reservas` (`id_reserva`, `id_usuario`, `id_laboratorio`, `fecha_inicio`, `fecha_fin`, `id_estado`, `motivo_uso`) VALUES
-(25, 5, 1, '2026-02-06 19:32:00', '2026-02-08 20:33:00', 2, 'hola'),
-(26, 5, 1, '2026-02-11 06:41:00', '2026-02-19 06:41:00', 3, 'Reparacion'),
-(27, 5, 2, '0000-00-00 00:00:00', '0000-00-00 00:00:00', 2, 'sad');
 
 -- --------------------------------------------------------
 
@@ -190,9 +158,13 @@ INSERT INTO `roles` (`id_rol`, `nombre_rol`, `descripcion`) VALUES
 CREATE TABLE `usuarios` (
   `id_usuario` int(11) NOT NULL,
   `nombre_completo` varchar(100) NOT NULL,
+  `apellido` varchar(100) NOT NULL,
+  `cedula_identidad` varchar(50) NOT NULL,
+  `telefono` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
   `id_rol` int(11) NOT NULL,
+  `estado` enum('pendiente','activo','inactivo') NOT NULL DEFAULT 'pendiente',
   `reset_token` varchar(255) DEFAULT NULL,
   `reset_expires` datetime DEFAULT NULL,
   `fecha_registro` datetime DEFAULT current_timestamp()
@@ -202,8 +174,8 @@ CREATE TABLE `usuarios` (
 -- Dumping data for table `usuarios`
 --
 
-INSERT INTO `usuarios` (`id_usuario`, `nombre_completo`, `email`, `password_hash`, `id_rol`, `reset_token`, `reset_expires`, `fecha_registro`) VALUES
-(5, 'Jose Lopez', 'Jalgxone@outlook.com', '$2y$10$WgI95ICRMuvwCHtxXE8yNeQ6nVolD4xIri5HpGRruvKMC7h5EkY2G', 1, '150bda9b6f59213cb591e3e9fbe9cb414a7b70d6d3c402b07cbcc4c001253f9a', '2026-02-07 06:06:18', '2026-02-04 00:23:10');
+INSERT INTO `usuarios` (`id_usuario`, `nombre_completo`, `apellido`, `cedula_identidad`, `telefono`, `email`, `password_hash`, `id_rol`, `estado`, `reset_token`, `reset_expires`, `fecha_registro`) VALUES
+(5, 'Jose', 'Lopez', '00000000', '0000000000', 'Jalgxone@outlook.com', '$2y$10$WgI95ICRMuvwCHtxXE8yNeQ6nVolD4xIri5HpGRruvKMC7h5EkY2G', 2, 'activo', '150bda9b6f59213cb591e3e9fbe9cb414a7b70d6d3c402b07cbcc4c001253f9a', '2026-02-07 06:06:18', '2026-02-04 00:23:10');
 
 --
 -- Indexes for dumped tables
@@ -287,25 +259,25 @@ ALTER TABLE `estados_reserva`
 -- AUTO_INCREMENT for table `incidencias`
 --
 ALTER TABLE `incidencias`
-  MODIFY `id_incidencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_incidencia` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `inventario`
 --
 ALTER TABLE `inventario`
-  MODIFY `id_equipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_equipo` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `laboratorios`
 --
 ALTER TABLE `laboratorios`
-  MODIFY `id_laboratorio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_laboratorio` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `reservas`
 --
 ALTER TABLE `reservas`
-  MODIFY `id_reserva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id_reserva` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `roles`
