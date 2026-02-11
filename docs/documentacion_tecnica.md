@@ -69,6 +69,22 @@ Se utiliza el método `$this->requireRole([2])` al inicio de los controladores o
 En el `UsuariosController`, existen protecciones críticas para evitar desastres operativos:
 - **Protección de Cuenta Propia:** Un administrador no puede quitarse a sí mismo el privilegio de administrador ni desactivar su propia cuenta. Esto garantiza que siempre haya al menos un acceso administrativo al sistema.
 
+### 3.4 Notificación de Registro de Usuario Aprobado
+
+Cuando un usuario se registra en el sistema, su cuenta queda pendiente de aprobación por parte de un administrador. Una vez que el administrador aprueba la cuenta, el sistema envía automáticamente una notificación al correo electrónico proporcionado por el usuario durante el registro (al proveedor de correo). Obviamente al hacer esto un sistema local esto no esta tal cual. Pero si la pagina estuviera montando si se aplica esto.
+
+**Flujo:**
+1. El usuario completa el formulario de registro y su cuenta queda en estado "pendiente".
+2. Un administrador revisa y aprueba la cuenta desde el módulo de gestión de usuarios.
+3. Al aprobar, el sistema envía un correo electrónico notificando al usuario que su cuenta ha sido activada y ya puede acceder al sistema.
+
+**Recomendaciones técnicas:**
+- Utilizar una librería de envío de correos como PHPMailer para garantizar compatibilidad con múltiples proveedores.
+- Configurar los parámetros SMTP en el archivo de configuración (`config/security.php` o similar).
+- Personalizar el mensaje de notificación para incluir instrucciones de acceso y datos de contacto de soporte.
+
+Este flujo mejora la seguridad y la experiencia del usuario, asegurando que solo cuentas verificadas y aprobadas puedan acceder al sistema.
+
 ---
 
 ## 4. Lógica de Inventario y Reservas
